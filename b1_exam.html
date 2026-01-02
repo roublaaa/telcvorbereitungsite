@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>B1 Prüfung | DEPRÜFUNG</title>
+    <style>
+    /* 1. CONFIGURATION & DESIGN TOKENS */
+    :root {
+        --bg: #0f172a; /* Deep Midnight Blue */
+        --surface: #1e293b; 
+        --accent: #38bdf8; /* Electric Blue */
+        --accent-glow: rgba(56, 189, 248, 0.3);
+        --text-primary: #f8fafc;
+        --text-secondary: #94a3b8;
+        --glass: rgba(30, 41, 59, 0.7);
+        --border: rgba(255, 255, 255, 0.08);
+        --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* 2. BASE RESET & SPEED OPTIMIZATION */
+    * { 
+        margin: 0; padding: 0; box-sizing: border-box; 
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        -webkit-font-smoothing: antialiased;
+    }
+    
+    body { 
+        background-color: var(--bg); 
+        background-image: 
+            radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.05) 0px, transparent 50%),
+            radial-gradient(at 100% 100%, rgba(15, 23, 42, 1) 0px, transparent 50%);
+        color: var(--text-primary);
+        min-height: 100vh;
+        overflow-x: hidden;
+    }
+
+    ::-webkit-scrollbar { display: none; }
+
+    /* 3. NAVIGATION - BLURRED GLASS */
+    .navbar {
+        height: 70px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 40px;
+        background: var(--glass);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-bottom: 1px solid var(--border);
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+    }
+
+    .logo { 
+        font-size: 1.4rem; 
+        font-weight: 800; 
+        color: var(--accent); 
+        text-decoration: none;
+        letter-spacing: -1px;
+        text-transform: uppercase;
+    }
+    .logo span { color: var(--text-primary); }
+
+    .menu-toggle { font-size: 24px; cursor: pointer; color: var(--accent); display: none; }
+
+        .nav-links { display: flex; gap: 30px; }
+        .nav-links a { 
+            text-decoration: none; 
+            color: var(--text-secondary); 
+            font-weight: 600; 
+            font-size: 0.9rem; 
+            transition: var(--transition);
+        }
+        .nav-links a:hover { color: var(--accent); }
+
+    /* 4. DASHBOARD HEADER - CLEAN & BOLD */
+    .container {
+        max-width: 1000px;
+        margin: 40px auto;
+        padding: 0 20px;
+    }
+
+    .header-box {
+        text-align: left;
+        margin-bottom: 50px;
+        padding-left: 15px;
+        border-left: 4px solid var(--accent);
+    }
+
+    .header-box h1 {
+        font-size: 2.5rem;
+        font-weight: 900;
+        letter-spacing: -1.5px;
+        margin-bottom: 5px;
+        background: linear-gradient(to right, #fff, #94a3b8);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .header-box p { color: var(--text-secondary); font-size: 1rem; }
+
+    /* 5. THE UNIQUE SECTION STYLE (CARDS) */
+    .exam-section {
+        background: var(--surface);
+        border-radius: 20px;
+        border: 1px solid var(--border);
+        margin-bottom: 20px;
+        overflow: hidden;
+        transition: var(--transition);
+    }
+
+    .exam-section:hover {
+        border-color: rgba(56, 189, 248, 0.4);
+        box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .accordion-header {
+        padding: 25px;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        user-select: none;
+    }
+
+    .accordion-header h2 {
+        font-size: 1.1rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .arrow-icon {
+        width: 32px;
+        height: 32px;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.7rem;
+        transition: var(--transition);
+        color: var(--accent);
+    }
+
+    .accordion-header.active .arrow-icon {
+        transform: rotate(180deg);
+        background: var(--accent);
+        color: var(--bg);
+    }
+
+    /* 6. THE CONTENT GRID - BENTO STYLE */
+    .accordion-content {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        background: rgba(15, 23, 42, 0.5);
+    }
+
+    .topic-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 12px;
+        padding: 25px;
+    }
+
+    /* 7. THE UNIQUE BUTTONS (GLASS TILES) */
+    .topic-btn {
+        background: #ffffff;
+        border: 1px solid var(--border);
+        color: var(--surface);
+        padding: 15px;
+        border-radius: 12px;
+        text-decoration: none;
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 70px;
+        transition: var(--transition);
+        backdrop-filter: blur(5px);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .topic-btn:hover {
+        background: var(--accent);
+        color: var(--bg);
+        transform: scale(1.05);
+        box-shadow: 0 0 20px var(--accent-glow);
+        border-color: var(--accent);
+    }
+
+    /* 8. MOBILE RESPONSIVE */
+    @media (max-width: 768px) {
+        .menu-toggle { display: block; } /* Shows the ☰ icon */
+        .navbar { padding: 0 20px; }
+        .nav-links {
+                display: none; 
+                position: absolute; top: 70px; left: 0; width: 100%;
+                background: var(--surface); backdrop-filter: blur(20px);
+                flex-direction: column; padding: 30px; border-bottom: 1px solid var(--border);
+            }
+    /* ADD THIS PART: This makes the menu appear when clicked */
+        .nav-links.active { display: flex; }
+        .header-box h1 { font-size: 1.8rem; }
+        .topic-grid {
+            grid-template-columns: repeat(2, 1fr);
+            padding: 15px;
+        }
+        .topic-btn { font-size: 0.65rem; min-height: 60px; }
+        .container { margin: 20px auto; }
+    }
+
+    /* ENTRANCE ANIMATION */
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .exam-section {
+        animation: fadeInUp 0.5s ease backwards;
+    }
+    .exam-section:nth-child(2) { animation-delay: 0.1s; }
+    .exam-section:nth-child(3) { animation-delay: 0.2s; }
+</style>
+</head>
+<body oncontextmenu="return false">
+
+    <nav class="navbar">
+        <a href="index.html" class="logo">DE<span>PRÜFUNG</span></a>
+        <div class="menu-toggle" onclick="toggleMenu()">☰</div>
+        <div class="nav-links" id="navLinks">
+            <a href="index.html">Startseite</a>
+            <a href="kontakt.html">Kontakt</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="header-box">
+            <h1>B1 telc-Prüfung</h1>
+            <p>Tippen Sie auf eine Kategorie, um die Themen zu öffnen.</p>
+        </div>
+
+        <!-- === ACCORDION 1: LESEN TEIL 1 === -->
+        <div class="exam-section">
+            <div class="accordion-header" onclick="toggleAccordion(this)">
+                <h2>📖 Lesen Teil 1 <span style="font-size:0.8rem; opacity:0.6; margin-left:10px; font-weight:400;">(19 Themen)</span></h2>
+                <span class="arrow-icon">▼</span>
+            </div>
+            <div class="accordion-content">
+                <div class="topic-grid" id="lesen-t1">
+                    <a class="topic-btn" href="/lesenb1/b1_lesen_teil1/1.html">PETRA / JENNIFER</a>
+                    <a class="topic-btn" href="/lesenb1/b1_lesen_teil1/2.html">EVA / IRIS</a>
+                    <a class="topic-btn" href="/lesenb1/b1_lesen_teil1/3.html">SOPHIE / ANDREAS2</a>
+                    <a class="topic-btn" href="/lesenb1/b1_lesen_teil1/4.html">NADJA / CLAUDIA</a>
+                    <a class="topic-btn" href="/lesenb1/b1_lesen_teil1/5.html">NICOLE</a>
+                    <a class="topic-btn" href="/lesenb1/b1_lesen_teil1/6.html">ANDREAS</a>
+                    <a class="topic-btn" href="/lesenb1/b1_lesen_teil1/7.html">ANNIKA 1</a>
+                    <a class="topic-btn" href="/lesenb1/b1_lesen_teil1/8.html">ANNIKA2 / SONJA CORINA</a>
+                    <a class="topic-btn" href="/lesenb1/b1_lesen_teil1/9.html">CAROLINA / ALICIA</a>
+                    <a class="topic-btn" href="/lesenb1/b1_lesen_teil1/10.html">VERA</a>
+                    <a class="topic-btn" href="/lesenb1/b1_lesen_teil1/11.html">THOMAS</a>
+                    <a class="topic-btn" href="/lesenb1/b1_lesen_teil1/12.html">TAMARA / JAKOB PAUL</a>
+                    <a class="topic-btn" href="/lesenb1/b1_lesen_teil1/13.html">JAN</a>
+                    <a class="topic-btn" href="/lesenb1/b1_lesen_teil1/14.html">VIKTOR</a>
+                    <a class="topic-btn" href="/lesenb1/b1_lesen_teil1/15.html">ALEX & CORA</a>
+                    <a class="topic-btn" href="/lesenb1/b1_lesen_teil1/16.html">RITA</a>
+                    <a class="topic-btn" href="/lesenb1/b1_lesen_teil1/17.html">MIROSLAV</a>
+                    <a class="topic-btn" href="/lesenb1/b1_lesen_teil1/18.html">KARLA</a>
+                    <a class="topic-btn" href="/lesenb1/b1_lesen_teil1/19.html">MORITZ</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- === ACCORDION 2: LESEN TEIL 2 === -->
+        <div class="exam-section">
+            <div class="accordion-header" onclick="toggleAccordion(this)">
+                <h2>📰 Lesen Teil 2 <span style="font-size:0.8rem; opacity:0.6; margin-left:10px; font-weight:400;">(19 Themen)</span></h2>
+                <span class="arrow-icon">▼</span>
+            </div>
+            <div class="accordion-content">
+                <div class="topic-grid" id="lesen-t2">
+                    <a href="/lesenb1/b1_lesen_teil2/1.html" class="topic-btn">Petra & ALICIA</a>
+                    <a href="/lesenb1/b1_lesen_teil2/2.html" class="topic-btn">EVA1</a>
+                    <a href="/lesenb1/b1_lesen_teil2/3.html" class="topic-btn">IRIS</a>
+                    <a href="/lesenb1/b1_lesen_teil2/4.html" class="topic-btn">SOPHIE</a>
+                    <a href="/lesenb1/b1_lesen_teil2/5.html" class="topic-btn">NADJA & CLAUDIA</a>
+                    <a href="/lesenb1/b1_lesen_teil2/6.html" class="topic-btn">NICOLE</a>
+                    <a href="/lesenb1/b1_lesen_teil2/7.html" class="topic-btn">ANDREAS</a>
+                    <a href="/lesenb1/b1_lesen_teil2/8.html" class="topic-btn">ANDREAS2 & CORINA ANNIKA(1&2)</a>
+                    <a href="/lesenb1/b1_lesen_teil2/9.html" class="topic-btn">CAROLINA/VERA</a>
+                    <a href="/lesenb1/b1_lesen_teil2/10.html" class="topic-btn">JENNIFER & TAMARA JAKOB/PAUL</a>
+                    <a href="/lesenb1/b1_lesen_teil2/11.html" class="topic-btn">THOMAS</a>
+                    <a href="/lesenb1/b1_lesen_teil2/12.html" class="topic-btn">JAN</a>
+                    <a href="/lesenb1/b1_lesen_teil2/13.html" class="topic-btn">VIKTOR</a>
+                    <a href="/lesenb1/b1_lesen_teil2/14.html" class="topic-btn">SONJA</a>
+                    <a href="/lesenb1/b1_lesen_teil2/15.html" class="topic-btn">ALEX & CORA</a>
+                    <a href="/lesenb1/b1_lesen_teil2/16.html" class="topic-btn">RITA</a>
+                    <a href="/lesenb1/b1_lesen_teil2/17.html" class="topic-btn">MIROSLAV & KARLA</a>
+                    <a href="/lesenb1/b1_lesen_teil2/18.html" class="topic-btn">MORITZ</a>
+                    <a href="/lesenb1/b1_lesen_teil2/19.html" class="topic-btn">MARA</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- === ACCORDION 3: LESEN TEIL 3 === -->
+        <div class="exam-section">
+            <div class="accordion-header" onclick="toggleAccordion(this)">
+                <h2>📢 Lesen Teil 3 <span style="font-size:0.8rem; opacity:0.6; margin-left:10px; font-weight:400;">(8 Themen)</span></h2>
+                <span class="arrow-icon">▼</span>
+            </div>
+            <div class="accordion-content">
+                <div class="topic-grid" id="lesen-t3">
+                    <a href="/lesenb1/b1_lesen_teil3/1.html" class="topic-btn">Petra</a>
+                    <a href="/lesenb1/b1_lesen_teil3/2.html" class="topic-btn">EVA1</a>
+                    <a href="/lesenb1/b1_lesen_teil3/3.html" class="topic-btn">IRIS</a>
+                    <a href="/lesenb1/b1_lesen_teil3/4.html" class="topic-btn">SOPHIE</a>
+                    <a href="/lesenb1/b1_lesen_teil3/5.html" class="topic-btn">NADJA & CLAUDIA</a>
+                    <a href="/lesenb1/b1_lesen_teil3/6.html" class="topic-btn">ANDREAS1</a>
+                    <a href="/lesenb1/b1_lesen_teil3/7.html" class="topic-btn">ANDREAS2</a>
+                    <a href="/lesenb1/b1_lesen_teil3/8.html" class="topic-btn">CAROLINA</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- === ACCORDION 4: SPRACHBAUSTEINE TEIL 1 === -->
+        <div class="exam-section">
+            <div class="accordion-header" onclick="toggleAccordion(this)">
+                <h2>✍️ Sprachbausteine Teil 1</h2>
+                <span class="arrow-icon">▼</span>
+            </div>
+            <div class="accordion-content">
+                <div class="topic-grid" id="sb-t1">
+                  <a href="/spracheb1/b1_sprache_teil1/1.html" class="topic-btn">PETRA/NADJA2<br>CLAUDIA</a>
+                    <a href="/spracheb1/b1_sprache_teil1/2.html" class="topic-btn">EVA</a>
+                    <a href="/spracheb1/b1_sprache_teil1/3.html" class="topic-btn">IRIS</a>
+                    <a href="/spracheb1/b1_sprache_teil1/4.html" class="topic-btn">SOPHIE</a>
+                    <a href="/spracheb1/b1_sprache_teil1/5.html" class="topic-btn">NICOLE</a>
+                    <a href="/spracheb1/b1_sprache_teil1/6.html" class="topic-btn">ANDREAS</a>
+                    <a href="/spracheb1/b1_sprache_teil1/7.html" class="topic-btn">ANDREAS2/VIKTOR<br>SONJA</a>
+                    <a href="/spracheb1/b1_sprache_teil1/8.html" class="topic-btn">ANNIKA1</a>
+                    <a href="/spracheb1/b1_sprache_teil1/9.html" class="topic-btn">ANNIKA2/JAN<br>CORINA</a>
+                    <a href="/spracheb1/b1_sprache_teil1/10.html" class="topic-btn">CAROLINA/RITA</a>
+                    <a href="/spracheb1/b1_sprache_teil1/11.html" class="topic-btn">VERA/PAUL</a>
+                    <a href="/spracheb1/b1_sprache_teil1/12.html" class="topic-btn">THOMAS/ANNA</a>
+                    <a href="/spracheb1/b1_sprache_teil1/13.html" class="topic-btn">JENNIFER</a>
+                    <a href="/spracheb1/b1_sprache_teil1/14.html" class="topic-btn">TAMARA/JAKOB</a>
+                    <a href="/spracheb1/b1_sprache_teil1/15.html" class="topic-btn">ALEX & CORA</a>
+                    <a href="/spracheb1/b1_sprache_teil1/16.html" class="topic-btn">MIROSLAV</a>
+                    <a href="/spracheb1/b1_sprache_teil1/17.html" class="topic-btn">KARLA</a>
+                    <a href="/spracheb1/b1_sprache_teil1/18.html" class="topic-btn">MORITZ</a>
+                    <a href="/spracheb1/b1_sprache_teil1/19.html" class="topic-btn">ALICIA</a>
+                    <a href="/spracheb1/b1_sprache_teil1/20.html" class="topic-btn">JAKOB2</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- === ACCORDION 5: SPRACHBAUSTEINE TEIL 2 === -->
+        <div class="exam-section">
+            <div class="accordion-header" onclick="toggleAccordion(this)">
+                <h2>✍️ Sprachbausteine Teil 2</h2>
+                <span class="arrow-icon">▼</span>
+            </div>
+            <div class="accordion-content">
+                <div class="topic-grid" id="sb-t2">
+                    <a href="/spracheb1/b1_sprache_teil2/1.html" class="topic-btn">PETRA/ALICIA</a>
+                    <a href="/spracheb1/b1_sprache_teil2/2.html" class="topic-btn">EVA</a>
+                    <a href="/spracheb1/b1_sprache_teil2/3.html" class="topic-btn">IRIS</a>
+                    <a href="/spracheb1/b1_sprache_teil2/4.html" class="topic-btn">SOPHIE</a>
+                    <a href="/spracheb1/b1_sprache_teil2/5.html" class="topic-btn">NICOLE</a>
+                    <a href="/spracheb1/b1_sprache_teil2/6.html" class="topic-btn">NADJA/CLAUDIA</a>
+                    <a href="/spracheb1/b1_sprache_teil2/7.html" class="topic-btn">ANDREAS</a>
+                    <a href="/spracheb1/b1_sprache_teil2/8.html" class="topic-btn">ANDREAS2/JAN</a>
+                    <a href="/spracheb1/b1_sprache_teil2/9.html" class="topic-btn">ANNIKA1&2</a>
+                    <a href="/spracheb1/b1_sprache_teil2/10.html" class="topic-btn">CAROLINA/CORINA</a>
+                    <a href="/spracheb1/b1_sprache_teil2/11.html" class="topic-btn">VERA</a>
+                    <a href="/spracheb1/b1_sprache_teil2/12.html" class="topic-btn">THOMAS/ANNA<br>JENNIFER</a>
+                    <a href="/spracheb1/b1_sprache_teil2/13.html" class="topic-btn">TAMARA/JAKOB<br>SONJA</a>
+                    <a href="/spracheb1/b1_sprache_teil2/14.html" class="topic-btn">VIKTOR</a>
+                    <a href="/spracheb1/b1_sprache_teil2/15.html" class="topic-btn">ALEX & CORA</a>
+                    <a href="/spracheb1/b1_sprache_teil2/16.html" class="topic-btn">PAUL</a>
+                    <a href="/spracheb1/b1_sprache_teil2/17.html" class="topic-btn">RITA</a>
+                    <a href="/spracheb1/b1_sprache_teil2/18.html" class="topic-btn">MIROSLAV</a>
+                    <a href="/spracheb1/b1_sprache_teil2/19.html" class="topic-btn">KARLA/MORITZ</a>
+                </div>
+            </div>
+        </div>
+
+         <!-- === ACCORDION 6: HÖREN === -->
+         <div class="exam-section">
+            <div class="accordion-header" onclick="toggleAccordion(this)">
+                <h2>🎧 Hören</h2>
+                <span class="arrow-icon">▼</span>
+            </div>
+            <div class="accordion-content">
+                <div class="topic-grid">
+                    <a href="/horenb1/b1_horen_teil1.html" class="topic-btn">Teil 1</a>
+                    <a href="/horenb1/b1_horen_teil2.html" class="topic-btn">Teil 2</a>
+                    <a href="/horenb1/b1_horen_teil3.html" class="topic-btn">Teil 3</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // MENU TOGGLE
+        function toggleMenu() {
+            document.getElementById('navLinks').classList.toggle('active');
+        }
+
+        // ACCORDION LOGIC (THE SLIDER EFFECT)
+        function toggleAccordion(header) {
+            // Toggle active class on the header
+            header.classList.toggle("active");
+            
+            // Get the content div (next sibling)
+            var content = header.nextElementSibling;
+            
+            if (content.style.maxHeight) {
+                // Close it
+                content.style.maxHeight = null;
+            } else {
+                // Open it (Slider effect)
+                content.style.maxHeight = content.scrollHeight + "px";
+            }
+        }
+
+        // --- BUTTON GENERATOR (Keeping your existing logic for other sections) ---
+        function createButtons(containerId, count, prefix) {
+            const container = document.getElementById(containerId);
+            if(!container) return;
+            for (let i = 1; i <= count; i++) {
+                const btn = document.createElement('button');
+                btn.className = 'topic-btn';
+                btn.innerText = prefix + ' ' + i;
+                btn.onclick = function() { alert("Öffne " + prefix + " " + i); };
+                container.appendChild(btn);
+            }
+        }
+
+        // Security
+        document.addEventListener('keydown', e => { if(e.ctrlKey || e.key === 'F12') e.preventDefault(); });
+    </script>
+</body>
+</html>

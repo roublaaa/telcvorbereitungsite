@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DEPRÜFUNG | Home</title>
+    <!-- Modern Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- 1. DESIGN TOKENS (Shared with Dashboard) --- */
+        :root {
+            --bg: #0f172a; 
+            --surface: #1e293b; 
+            --accent: #38bdf8; 
+            --accent-glow: rgba(56, 189, 248, 0.4);
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --glass: rgba(30, 41, 59, 0.7);
+            --border: rgba(255, 255, 255, 0.08);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* --- 2. GLOBAL RESET --- */
+        * { 
+            margin: 0; padding: 0; box-sizing: border-box; 
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -webkit-user-select: none; user-select: none;
+        }
+        
+        body { 
+            background-color: var(--bg); 
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.08) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(15, 23, 42, 1) 0px, transparent 50%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* --- 3. NAVBAR (GLASS) --- */
+        .navbar {
+            height: 70px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 6%;
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo { 
+            font-size: 1.3rem; 
+            font-weight: 800; 
+            color: var(--accent); 
+            text-decoration: none;
+            letter-spacing: -1px;
+            text-transform: uppercase;
+        }
+        .logo span { color: var(--text-primary); }
+
+        .menu-toggle { font-size: 24px; cursor: pointer; color: var(--accent); display: none; }
+
+        .nav-links { display: flex; gap: 30px; }
+        .nav-links a { 
+            text-decoration: none; 
+            color: var(--text-secondary); 
+            font-weight: 600; 
+            font-size: 0.9rem; 
+            transition: var(--transition);
+        }
+        .nav-links a:hover { color: var(--accent); }
+
+        /* --- 4. HERO SECTION --- */
+        .hero {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .hero h1 { 
+            font-size: 3.5rem; 
+            font-weight: 900; 
+            line-height: 1.1;
+            letter-spacing: -2px; 
+            margin-bottom: 15px;
+            background: linear-gradient(to bottom, #ffffff 30%, #94a3b8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            max-width: 800px;
+        }
+
+        .hero p { 
+            font-size: 1.1rem; 
+            color: var(--text-secondary); 
+            margin-bottom: 40px; 
+            max-width: 500px;
+            line-height: 1.6;
+        }
+
+        /* --- 5. EXAM TILES (THE MAIN BUTTONS) --- */
+        .exam-options { 
+            display: flex; 
+            gap: 20px; 
+            perspective: 1000px;
+        }
+
+        .exam-card {
+            background: var(--surface);
+            width: 180px;
+            height: 180px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-decoration: none;
+            border-radius: 24px;
+            border: 1px solid var(--border);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* The Level Label (e.g., B1) */
+        .exam-card h2 { 
+            font-size: 3rem; 
+            font-weight: 800; 
+            color: var(--text-primary); 
+            margin-bottom: 5px;
+            z-index: 2;
+        }
+
+        .exam-card span { 
+            font-size: 0.8rem; 
+            font-weight: 700; 
+            color: var(--accent); 
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            z-index: 2;
+        }
+
+        /* Hover Interaction */
+        .exam-card:hover {
+            transform: translateY(-10px) rotateX(5deg);
+            border-color: var(--accent);
+            background: var(--bg);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 20px var(--accent-glow);
+        }
+
+        /* Background glow effect inside card on hover */
+        .exam-card::before {
+            content: "";
+            position: absolute;
+            width: 100%; height: 100%;
+            background: radial-gradient(circle at center, var(--accent-glow) 0%, transparent 70%);
+            opacity: 0;
+            transition: var(--transition);
+        }
+        .exam-card:hover::before { opacity: 1; }
+
+        /* --- 6. ALERTS & UI --- */
+        #alert-box { 
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%); 
+            background: rgba(220, 38, 38, 0.9); 
+            color: white; padding: 12px 25px; border-radius: 50px; 
+            display: none; font-weight: bold; z-index: 1000;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,255,255,0.2);
+            font-size: 0.8rem;
+        }
+
+        /* --- 7. MOBILE RESPONSIVE --- */
+        @media (max-width: 768px) {
+            .menu-toggle { display: block; }
+            
+            .nav-links {
+                display: none; 
+                position: absolute; top: 70px; left: 0; width: 100%;
+                background: var(--glass); backdrop-filter: blur(20px);
+                flex-direction: column; padding: 30px; border-bottom: 1px solid var(--border);
+            }
+            .nav-links.active { display: flex; }
+
+            .hero h1 { font-size: 2.2rem; letter-spacing: -1px; }
+            .hero p { font-size: 0.95rem; }
+
+            .exam-options { gap: 15px; }
+            .exam-card { width: 140px; height: 140px; border-radius: 20px; }
+            .exam-card h2 { font-size: 2.2rem; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body oncontextmenu="return false">
+
+    <nav class="navbar">
+        <a href="index.html" class="logo">DE<span>PRÜFUNG</span></a>
+        <div class="menu-toggle" onclick="toggleMenu()">☰</div>
+        <div class="nav-links" id="navLinks">
+            <a href="index.html" style="color: var(--accent);">Startseite</a>
+            <a href="kontakt.html">Kontakt</a>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <h1>Dein Leitfaden zum Erfolg bei der telc-Prüfung</h1>
+        <p>Präzise Vorbereitung. Modernes Lernen. Wähle dein Niveau, um zu starten.</p>
+        
+        <div class="exam-options">
+            <a href="b1_exam.html" class="exam-card">
+                <h2>B1</h2>
+            </a>
+            <a href="b2_exam.html" class="exam-card">
+                <h2>B2</h2>
+            </a>
+        </div>
+    </div>
+
+    <div id="alert-box">⚠️ Inhalt geschützt / Content Protected</div>
+
+    <script>
+        // Toggle Mobile Menu
+        function toggleMenu() {
+            document.getElementById('navLinks').classList.toggle('active');
+        }
+
+        // Security
+        document.addEventListener('keydown', e => { 
+            if(e.ctrlKey || e.key === 'F12') { 
+                e.preventDefault(); 
+                const alertBox = document.getElementById('alert-box');
+                alertBox.style.display = 'block'; 
+                setTimeout(() => alertBox.style.display = 'none', 2000); 
+            } 
+        });
+    </script>
+</body>
+</html>

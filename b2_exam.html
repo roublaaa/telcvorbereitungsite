@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>B2 Prüfung | DEPRÜFUNG</title>
+    <style>
+    /* 1. CONFIGURATION & DESIGN TOKENS */
+    :root {
+        --bg: #0f172a; /* Deep Midnight Blue */
+        --surface: #1e293b; 
+        --accent: #38bdf8; /* Electric Blue */
+        --accent-glow: rgba(56, 189, 248, 0.3);
+        --text-primary: #f8fafc;
+        --text-secondary: #94a3b8;
+        --glass: rgba(30, 41, 59, 0.7);
+        --border: rgba(255, 255, 255, 0.08);
+        --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* 2. BASE RESET & SPEED OPTIMIZATION */
+    * { 
+        margin: 0; padding: 0; box-sizing: border-box; 
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        -webkit-font-smoothing: antialiased;
+    }
+    
+    body { 
+        background-color: var(--bg); 
+        background-image: 
+            radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.05) 0px, transparent 50%),
+            radial-gradient(at 100% 100%, rgba(15, 23, 42, 1) 0px, transparent 50%);
+        color: var(--text-primary);
+        min-height: 100vh;
+        overflow-x: hidden;
+    }
+
+    ::-webkit-scrollbar { display: none; }
+
+    /* 3. NAVIGATION - BLURRED GLASS */
+    .navbar {
+        height: 70px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 40px;
+        background: var(--glass);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-bottom: 1px solid var(--border);
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+    }
+
+    .logo { 
+        font-size: 1.4rem; 
+        font-weight: 800; 
+        color: var(--accent); 
+        text-decoration: none;
+        letter-spacing: -1px;
+        text-transform: uppercase;
+    }
+    .logo span { color: var(--text-primary); }
+
+    .menu-toggle { font-size: 24px; cursor: pointer; color: var(--accent); display: none; }
+
+        .nav-links { display: flex; gap: 30px; }
+        .nav-links a { 
+            text-decoration: none; 
+            color: var(--text-secondary); 
+            font-weight: 600; 
+            font-size: 0.9rem; 
+            transition: var(--transition);
+        }
+        .nav-links a:hover { color: var(--accent); }
+
+    /* 4. DASHBOARD HEADER - CLEAN & BOLD */
+    .container {
+        max-width: 1000px;
+        margin: 40px auto;
+        padding: 0 20px;
+    }
+
+    .header-box {
+        text-align: left;
+        margin-bottom: 50px;
+        padding-left: 15px;
+        border-left: 4px solid var(--accent);
+    }
+
+    .header-box h1 {
+        font-size: 2.5rem;
+        font-weight: 900;
+        letter-spacing: -1.5px;
+        margin-bottom: 5px;
+        background: linear-gradient(to right, #fff, #94a3b8);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .header-box p { color: var(--text-secondary); font-size: 1rem; }
+
+    /* 5. THE UNIQUE SECTION STYLE (CARDS) */
+    .exam-section {
+        background: var(--surface);
+        border-radius: 20px;
+        border: 1px solid var(--border);
+        margin-bottom: 20px;
+        overflow: hidden;
+        transition: var(--transition);
+    }
+
+    .exam-section:hover {
+        border-color: rgba(56, 189, 248, 0.4);
+        box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .accordion-header {
+        padding: 25px;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        user-select: none;
+    }
+
+    .accordion-header h2 {
+        font-size: 1.1rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .arrow-icon {
+        width: 32px;
+        height: 32px;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.7rem;
+        transition: var(--transition);
+        color: var(--accent);
+    }
+
+    .accordion-header.active .arrow-icon {
+        transform: rotate(180deg);
+        background: var(--accent);
+        color: var(--bg);
+    }
+
+    /* 6. THE CONTENT GRID - BENTO STYLE */
+    .accordion-content {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        background: rgba(15, 23, 42, 0.5);
+    }
+
+    .topic-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 12px;
+        padding: 25px;
+    }
+
+    /* 7. THE UNIQUE BUTTONS (GLASS TILES) */
+    .topic-btn {
+        background: #ffffff;
+        border: 1px solid var(--border);
+        color: var(--surface);
+        padding: 15px;
+        border-radius: 12px;
+        text-decoration: none;
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 70px;
+        transition: var(--transition);
+        backdrop-filter: blur(5px);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .topic-btn:hover {
+        background: var(--accent);
+        color: var(--bg);
+        transform: scale(1.05);
+        box-shadow: 0 0 20px var(--accent-glow);
+        border-color: var(--accent);
+    }
+
+    /* 8. MOBILE RESPONSIVE */
+    @media (max-width: 768px) {
+        .menu-toggle { display: block; } /* Shows the ☰ icon */
+        .navbar { padding: 0 20px; }
+        .nav-links {
+                display: none; 
+                position: absolute; top: 70px; left: 0; width: 100%;
+                background: var(--surface); backdrop-filter: blur(20px);
+                flex-direction: column; padding: 30px; border-bottom: 1px solid var(--border);
+            }
+    /* ADD THIS PART: This makes the menu appear when clicked */
+        .nav-links.active { display: flex; }
+        .header-box h1 { font-size: 1.8rem; }
+        .topic-grid {
+            grid-template-columns: repeat(2, 1fr);
+            padding: 15px;
+        }
+        .topic-btn { font-size: 0.65rem; min-height: 60px; }
+        .container { margin: 20px auto; }
+    }
+
+    /* ENTRANCE ANIMATION */
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .exam-section {
+        animation: fadeInUp 0.5s ease backwards;
+    }
+    .exam-section:nth-child(2) { animation-delay: 0.1s; }
+    .exam-section:nth-child(3) { animation-delay: 0.2s; }
+</style>
+</head>
+<body oncontextmenu="return false">
+
+    <nav class="navbar">
+        <a href="index.html" class="logo">DE<span>PRÜFUNG</span></a>
+        <div class="menu-toggle" onclick="toggleMenu()">☰</div>
+        <div class="nav-links" id="navLinks">
+            <a href="index.html">Startseite</a>
+            <a href="kontakt.html">Kontakt</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="header-box">
+            <h1>B2 telc-Prüfung</h1>
+            <p>Tippen Sie auf eine Kategorie, um die Themen zu öffnen.</p>
+        </div>
+
+        <!-- === ACCORDION 1: LESEN TEIL 1 === -->
+        <div class="exam-section">
+            <div class="accordion-header" onclick="toggleAccordion(this)">
+                <h2>📖 Lesen Teil 1 <span style="font-size:0.8rem; opacity:0.6; margin-left:10px; font-weight:400;">(29 Themen)</span></h2>
+                <span class="arrow-icon">▼</span>
+            </div>
+            <div class="accordion-content">
+                <div class="topic-grid" id="lesen-t1">
+                    <a href="/lesenb2/b2_lesen_teil1/1.html" class="topic-btn">Umwelt</a>
+                    <a href="/lesenb2/b2_lesen_teil1/2.html" class="topic-btn">Impfung</a>
+                    <a href="/lesenb2/b2_lesen_teil1/3.html" class="topic-btn">Kinderhandy</a>
+                    <a href="/lesenb2/b2_lesen_teil1/4.html" class="topic-btn">Drogen</a>
+                    <a href="/lesenb2/b2_lesen_teil1/5.html" class="topic-btn">Tanzkurs</a>
+                    <a href="/lesenb2/b2_lesen_teil1/6.html" class="topic-btn">Limonade</a>
+                    <a href="/lesenb2/b2_lesen_teil1/7.html" class="topic-btn">Grundschule</a>
+                    <a href="/lesenb2/b2_lesen_teil1/8.html" class="topic-btn">Insekten</a>
+                    <a href="/lesenb2/b2_lesen_teil1/9.html" class="topic-btn">Österreich</a>
+                    <a href="/lesenb2/b2_lesen_teil1/10.html" class="topic-btn">Jugend forscht</a>
+                    <a href="/lesenb2/b2_lesen_teil1/11.html" class="topic-btn">Sport ist Gesund</a>
+                    <a href="/lesenb2/b2_lesen_teil1/12.html" class="topic-btn">Inseln</a>
+                    <a href="/lesenb2/b2_lesen_teil1/13.html" class="topic-btn">In den Alpen</a>
+                    <a href="/lesenb2/b2_lesen_teil1/14.html" class="topic-btn">In den Alpen 2</a>
+                    <a href="/lesenb2/b2_lesen_teil1/15.html" class="topic-btn">Kartoffel</a>
+                    <a href="/lesenb2/b2_lesen_teil1/16.html" class="topic-btn">Bilder</a>
+                    <a href="/lesenb2/b2_lesen_teil1/17.html" class="topic-btn">Licht</a>
+                    <a href="/lesenb2/b2_lesen_teil1/18.html" class="topic-btn">Spielen</a>
+                    <a href="/lesenb2/b2_lesen_teil1/19.html" class="topic-btn">Programmieren</a>
+                    <a href="/lesenb2/b2_lesen_teil1/20.html" class="topic-btn">Trampoline</a>
+                    <a href="/lesenb2/b2_lesen_teil1/21.html" class="topic-btn">Benzin</a>
+                    <a href="/lesenb2/b2_lesen_teil1/22.html" class="topic-btn">Kaffee</a>
+                    <a href="/lesenb2/b2_lesen_teil1/23.html" class="topic-btn">Bonbons</a>
+                    <a href="/lesenb2/b2_lesen_teil1/24.html" class="topic-btn">Geld</a>
+                    <a href="/lesenb2/b2_lesen_teil1/25.html" class="topic-btn">Auf dem Weg</a>
+                    <a href="/lesenb2/b2_lesen_teil1/26.html" class="topic-btn">Schlafzug 1</a>
+                    <a href="/lesenb2/b2_lesen_teil1/27.html" class="topic-btn">Schlafzug 2</a>
+                    <a href="/lesenb2/b2_lesen_teil1/28.html" class="topic-btn">Keine Zeit</a>
+                    <a href="/lesenb2/b2_lesen_teil1/29.html" class="topic-btn">Licht (NEUE)</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- === ACCORDION 2: LESEN TEIL 2 === -->
+        <div class="exam-section">
+            <div class="accordion-header" onclick="toggleAccordion(this)">
+                <h2>📰 Lesen Teil 2 <span style="font-size:0.8rem; opacity:0.6; margin-left:10px; font-weight:400;">(26 Themen)</span></h2>
+                <span class="arrow-icon">▼</span>
+            </div>
+            <div class="accordion-content">
+                <div class="topic-grid" id="lesen-t2">
+                    <a href="/lesenb2/b2_lesen_teil2/1.html" class="topic-btn">Puppenmacher</a>
+                    <a href="/lesenb2/b2_lesen_teil2/2.html" class="topic-btn">Österreich</a>
+                    <a href="/lesenb2/b2_lesen_teil2/3.html" class="topic-btn">Parkuhren</a>
+                    <a href="/lesenb2/b2_lesen_teil2/4.html" class="topic-btn">Traumfrau</a>
+                    <a href="/lesenb2/b2_lesen_teil2/5.html" class="topic-btn">Kaufentscheidungen</a>
+                    <a href="/lesenb2/b2_lesen_teil2/6.html" class="topic-btn">Millionäre</a>
+                    <a href="/lesenb2/b2_lesen_teil2/7.html" class="topic-btn">Gehirn</a>
+                    <a href="/lesenb2/b2_lesen_teil2/8.html" class="topic-btn">Verpackungen</a>
+                    <a href="/lesenb2/b2_lesen_teil2/9.html" class="topic-btn">Kreditkarten</a>
+                    <a href="/lesenb2/b2_lesen_teil2/10.html" class="topic-btn">Krista die Kühe</a>
+                    <a href="/lesenb2/b2_lesen_teil2/11.html" class="topic-btn">Ernährung</a>
+                    <a href="/lesenb2/b2_lesen_teil2/12.html" class="topic-btn">Kaffee</a>
+                    <a href="/lesenb2/b2_lesen_teil2/13.html" class="topic-btn">Kaffee 2</a>
+                    <a href="/lesenb2/b2_lesen_teil2/14.html" class="topic-btn">Großraumbüros</a>
+                    <a href="/lesenb2/b2_lesen_teil2/15.html" class="topic-btn">Familie</a>
+                    <a href="/lesenb2/b2_lesen_teil2/16.html" class="topic-btn">Babys</a>
+                    <a href="/lesenb2/b2_lesen_teil2/17.html" class="topic-btn">Karneval von Unna</a>
+                    <a href="/lesenb2/b2_lesen_teil2/18.html" class="topic-btn">Mehrsprachige</a>
+                    <a href="/lesenb2/b2_lesen_teil2/19.html" class="topic-btn">Gesundes Essen</a>
+                    <a href="/lesenb2/b2_lesen_teil2/20.html" class="topic-btn">Dienstmädchen</a>
+                    <a href="/lesenb2/b2_lesen_teil2/21.html" class="topic-btn">Reitergruppe</a>
+                    <a href="/lesenb2/b2_lesen_teil2/22.html" class="topic-btn">Brigitte Vollmer</a>
+                    <a href="/lesenb2/b2_lesen_teil2/23.html" class="topic-btn">Nachtzug</a>
+                    <a href="/lesenb2/b2_lesen_teil2/24.html" class="topic-btn">Die ganze Welt</a>
+                    <a href="/lesenb2/b2_lesen_teil2/25.html" class="topic-btn">Kellner</a>
+                    <a href="/lesenb2/b2_lesen_teil2/26.html" class="topic-btn">Weniger Euro</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- === ACCORDION 3: LESEN TEIL 3 === -->
+        <div class="exam-section">
+            <div class="accordion-header" onclick="toggleAccordion(this)">
+                <h2>📢 Lesen Teil 3 <span style="font-size:0.8rem; opacity:0.6; margin-left:10px; font-weight:400;">(27 Themen)</span></h2>
+                <span class="arrow-icon">▼</span>
+            </div>
+            <div class="accordion-content">
+                <div class="topic-grid" id="lesen-t3">
+                    <a href="/lesenb2/b2_lesen_teil3/1.html" class="topic-btn">Fernsehprogramm</a>
+                    <a href="/lesenb2/b2_lesen_teil3/2.html" class="topic-btn">Sport ist Gesund</a>
+                    <a href="/lesenb2/b2_lesen_teil3/3.html" class="topic-btn">Kellner</a>
+                    <a href="/lesenb2/b2_lesen_teil3/4.html" class="topic-btn">Schwägerin</a>
+                    <a href="/lesenb2/b2_lesen_teil3/5.html" class="topic-btn">Schwägerin(das)</a>
+                    <a href="/lesenb2/b2_lesen_teil3/6.html" class="topic-btn">Dokumentarfilm</a>
+                    <a href="/lesenb2/b2_lesen_teil3/7.html" class="topic-btn">Wein und Insekten</a>
+                    <a href="/lesenb2/b2_lesen_teil3/8.html" class="topic-btn">Grundschule</a>
+                    <a href="/lesenb2/b2_lesen_teil3/9.html" class="topic-btn">Kein Zeit</a>
+                    <a href="/lesenb2/b2_lesen_teil3/10.html" class="topic-btn">Kein Zeit 2</a>
+                    <a href="/lesenb2/b2_lesen_teil3/11.html" class="topic-btn">Sport</a>
+                    <a href="/lesenb2/b2_lesen_teil3/12.html" class="topic-btn">Gärten</a>
+                    <a href="/lesenb2/b2_lesen_teil3/13.html" class="topic-btn">Apotheker</a>
+                    <a href="/lesenb2/b2_lesen_teil3/14.html" class="topic-btn">Urlaub</a>
+                    <a href="/lesenb2/b2_lesen_teil3/15.html" class="topic-btn">Anwalt</a>
+                    <a href="/lesenb2/b2_lesen_teil3/16.html" class="topic-btn">Anwalt 2</a>
+                    <a href="/lesenb2/b2_lesen_teil3/17.html" class="topic-btn">Der Hund</a>
+                    <a href="/lesenb2/b2_lesen_teil3/18.html" class="topic-btn">Musik</a>
+                    <a href="/lesenb2/b2_lesen_teil3/19.html" class="topic-btn">Haushalt</a>
+                    <a href="/lesenb2/b2_lesen_teil3/20.html" class="topic-btn">Musikinstrumente</a>
+                    <a href="/lesenb2/b2_lesen_teil3/21.html" class="topic-btn">Schiffsreise</a>
+                    <a href="/lesenb2/b2_lesen_teil3/22.html" class="topic-btn">Ausflug</a>
+                    <a href="/lesenb2/b2_lesen_teil3/23.html" class="topic-btn">Schwägerin Gesund</a>
+                    <a href="/lesenb2/b2_lesen_teil3/24.html" class="topic-btn">Au-pair-Mädchen</a>
+                    <a href="/lesenb2/b2_lesen_teil3/25.html" class="topic-btn">Tierdokumentationen</a>
+                    <a href="/lesenb2/b2_lesen_teil3/26.html" class="topic-btn">Schlafzug</a>
+                    <a href="/lesenb2/b2_lesen_teil3/27.html" class="topic-btn">Bonbons</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- === ACCORDION 4: SPRACHBAUSTEINE TEIL 1 === -->
+        <div class="exam-section">
+            <div class="accordion-header" onclick="toggleAccordion(this)">
+                <h2>✍️ Sprachbausteine Teil 1</h2>
+                <span class="arrow-icon">▼</span>
+            </div>
+            <div class="accordion-content">
+                <div class="topic-grid" id="sb-t1">
+                    <a href="/spracheb2/b2_sprache_teil1/1.html" class="topic-btn">Herr Martini</a>
+                    <a href="/spracheb2/b2_sprache_teil1/2.html" class="topic-btn">Judith oder Lina</a>
+                    <a href="/spracheb2/b2_sprache_teil1/3.html" class="topic-btn">Igor</a>
+                    <a href="/spracheb2/b2_sprache_teil1/4.html" class="topic-btn">Maria</a>
+                    <a href="/spracheb2/b2_sprache_teil1/5.html" class="topic-btn">Ida</a>
+                    <a href="/spracheb2/b2_sprache_teil1/6.html" class="topic-btn">Andrea</a>
+                    <a href="/spracheb2/b2_sprache_teil1/7.html" class="topic-btn">Andrea 2</a>
+                    <a href="/spracheb2/b2_sprache_teil1/8.html" class="topic-btn">Autorinnen und Autoren</a>
+                    <a href="/spracheb2/b2_sprache_teil1/9.html" class="topic-btn">Geissler oder Dippold</a>
+                    <a href="/spracheb2/b2_sprache_teil1/10.html" class="topic-btn">Herr Dr. Dobromil</a>
+                    <a href="/spracheb2/b2_sprache_teil1/11.html" class="topic-btn">Frau Szabo</a>
+                    <a href="/spracheb2/b2_sprache_teil1/12.html" class="topic-btn">Frau Szabo 2</a>
+                    <a href="/spracheb2/b2_sprache_teil1/13.html" class="topic-btn">Corinna</a>
+                    <a href="/spracheb2/b2_sprache_teil1/14.html" class="topic-btn">Justus oder Juhannas</a>
+                    <a href="/spracheb2/b2_sprache_teil1/15.html" class="topic-btn">Justus oder Juhannas 2</a>
+                    <a href="/spracheb2/b2_sprache_teil1/16.html" class="topic-btn">Ferdinand, Phillip, Christopher</a>
+                    <a href="/spracheb2/b2_sprache_teil1/17.html" class="topic-btn">Liebe Paola</a>
+                    <a href="/spracheb2/b2_sprache_teil1/18.html" class="topic-btn">Liebe Julian</a>
+                    <a href="/spracheb2/b2_sprache_teil1/19.html" class="topic-btn">Liebe Lara</a>
+                    <a href="/spracheb2/b2_sprache_teil1/20.html" class="topic-btn">Lieber David</a>
+                    <a href="/spracheb2/b2_sprache_teil1/21.html" class="topic-btn">Liebe Maria, Lieber Timur</a>
+                    <a href="/spracheb2/b2_sprache_teil1/22.html" class="topic-btn">Liebe Vanessa</a>
+                    <a href="/spracheb2/b2_sprache_teil1/23.html" class="topic-btn">Frau Goronsksa</a>
+                    <a href="/spracheb2/b2_sprache_teil1/24.html" class="topic-btn">Liebe Karin</a>
+                    <a href="/spracheb2/b2_sprache_teil1/25.html" class="topic-btn">Liebe Jutta</a>
+                    <a href="/spracheb2/b2_sprache_teil1/26.html" class="topic-btn">Liebe Meike</a>
+                    <a href="/spracheb2/b2_sprache_teil1/27.html" class="topic-btn">Liebe Leon</a>
+                    <a href="/spracheb2/b2_sprache_teil1/28.html" class="topic-btn">Liebe Clara</a>
+                    <a href="/spracheb2/b2_sprache_teil1/29.html" class="topic-btn">Lieber Thomas</a>
+                    <a href="/spracheb2/b2_sprache_teil1/30.html" class="topic-btn">Dr. Moosberger</a>
+                    <a href="/spracheb2/b2_sprache_teil1/31.html" class="topic-btn">Lina & Florian</a>
+                    <a href="/spracheb2/b2_sprache_teil1/32.html" class="topic-btn">Liebe Agnieszka</a>
+                    <a href="/spracheb2/b2_sprache_teil1/33.html" class="topic-btn">Jens</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- === ACCORDION 5: SPRACHBAUSTEINE TEIL 2 === -->
+        <div class="exam-section">
+            <div class="accordion-header" onclick="toggleAccordion(this)">
+                <h2>✍️ Sprachbausteine Teil 2</h2>
+                <span class="arrow-icon">▼</span>
+            </div>
+            <div class="accordion-content">
+                <div class="topic-grid" id="sb-t2">
+                    <a href="/spracheb2/b2_sprache_teil2/1.html" class="topic-btn">Theater für Kinder und Jugendliche</a>
+                    <a href="/spracheb2/b2_sprache_teil2/2.html" class="topic-btn">Im Restaurant</a>
+                    <a href="/spracheb2/b2_sprache_teil2/3.html" class="topic-btn">Das Fahrrad: ernsthafte Konkurrenz fürs Auto?</a>
+                    <a href="/spracheb2/b2_sprache_teil2/4.html" class="topic-btn">Haustieren</a>
+                    <a href="/spracheb2/b2_sprache_teil2/5.html" class="topic-btn">Liebesgrüße aus der Kühltruhe</a>
+                    <a href="/spracheb2/b2_sprache_teil2/6.html" class="topic-btn">Braunbären</a>
+                    <a href="/spracheb2/b2_sprache_teil2/7.html" class="topic-btn">Ausbildung</a>
+                    <a href="/spracheb2/b2_sprache_teil2/8.html" class="topic-btn">Skipiste</a>
+                    <a href="/spracheb2/b2_sprache_teil2/9.html" class="topic-btn">Jugend diskutiert</a>
+                    <a href="/spracheb2/b2_sprache_teil2/10.html" class="topic-btn">Manipulierte Bilder</a>
+                    <a href="/spracheb2/b2_sprache_teil2/11.html" class="topic-btn">Haustieren</a>
+                    <a href="/spracheb2/b2_sprache_teil2/12.html" class="topic-btn">Schwarzarbeit</a>
+                    <a href="/spracheb2/b2_sprache_teil2/13.html" class="topic-btn">Handschrift</a>
+                    <a href="/spracheb2/b2_sprache_teil2/14.html" class="topic-btn">Schulweg</a>
+                    <a href="/spracheb2/b2_sprache_teil2/15.html" class="topic-btn">Höflichkeit</a>
+                    <a href="/spracheb2/b2_sprache_teil2/16.html" class="topic-btn">Obst und Gemüse</a>
+                    <a href="/spracheb2/b2_sprache_teil2/17.html" class="topic-btn">TV-Bilder</a>
+                    <a href="/spracheb2/b2_sprache_teil2/18.html" class="topic-btn">Freund des Menschen</a>
+                    <a href="/spracheb2/b2_sprache_teil2/19.html" class="topic-btn">BIO</a>
+                    <a href="/spracheb2/b2_sprache_teil2/20.html" class="topic-btn">Erfolg</a>
+                    <a href="/spracheb2/b2_sprache_teil2/21.html" class="topic-btn">Deutschland</a>
+                    <a href="/spracheb2/b2_sprache_teil2/22.html" class="topic-btn">Joggen</a>
+                    <a href="/spracheb2/b2_sprache_teil2/23.html" class="topic-btn">Maßgeschneidert</a>
+                    <a href="/spracheb2/b2_sprache_teil2/24.html" class="topic-btn">Der Hund</a>
+                    <a href="/spracheb2/b2_sprache_teil2/25.html" class="topic-btn">Online—Sprachkurse</a>
+                    <a href="/spracheb2/b2_sprache_teil2/26.html" class="topic-btn">Fische</a>
+                    <a href="/spracheb2/b2_sprache_teil2/27.html" class="topic-btn">Man(n) kocht selbst</a>
+                    <a href="/spracheb2/b2_sprache_teil2/28.html" class="topic-btn">Schönschrift</a>
+                    <a href="/spracheb2/b2_sprache_teil2/29.html" class="topic-btn">Kaffee und Kuchen</a>
+                </div>
+            </div>
+        </div>
+
+         <!-- === ACCORDION 6: HÖREN === -->
+         <div class="exam-section">
+            <div class="accordion-header" onclick="toggleAccordion(this)">
+                <h2>🎧 Hören</h2>
+                <span class="arrow-icon">▼</span>
+            </div>
+            <div class="accordion-content">
+                <div class="topic-grid">
+                    <a href="/horenb2/b2_horen_teil1.html" class="topic-btn">Teil 1</a>
+                    <a href="/horenb2/b2_horen_teil2.html" class="topic-btn">Teil 2</a>
+                    <a href="/horenb2/b2_horen_teil3.html" class="topic-btn">Teil 3</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // MENU TOGGLE
+        function toggleMenu() {
+            document.getElementById('navLinks').classList.toggle('active');
+        }
+
+        // ACCORDION LOGIC (THE SLIDER EFFECT)
+        function toggleAccordion(header) {
+            // Toggle active class on the header
+            header.classList.toggle("active");
+            
+            // Get the content div (next sibling)
+            var content = header.nextElementSibling;
+            
+            if (content.style.maxHeight) {
+                // Close it
+                content.style.maxHeight = null;
+            } else {
+                // Open it (Slider effect)
+                content.style.maxHeight = content.scrollHeight + "px";
+            }
+        }
+
+        // --- BUTTON GENERATOR (Keeping your existing logic for other sections) ---
+        function createButtons(containerId, count, prefix) {
+            const container = document.getElementById(containerId);
+            if(!container) return;
+            for (let i = 1; i <= count; i++) {
+                const btn = document.createElement('button');
+                btn.className = 'topic-btn';
+                btn.innerText = prefix + ' ' + i;
+                btn.onclick = function() { alert("Öffne " + prefix + " " + i); };
+                container.appendChild(btn);
+            }
+        }
+
+        // Security
+        document.addEventListener('keydown', e => { if(e.ctrlKey || e.key === 'F12') e.preventDefault(); });
+    </script>
+</body>
+</html>

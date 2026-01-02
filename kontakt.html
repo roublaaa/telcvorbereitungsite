@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kontakt | DEPRÜFUNG</title>
+    <!-- Modern Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- 1. DESIGN TOKENS (Matching Home & Exam pages) --- */
+        :root {
+            --bg: #0f172a; 
+            --surface: #1e293b; 
+            --accent: #38bdf8; 
+            --whatsapp: #22c55e; /* Vibrant Pro Green */
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --glass: rgba(30, 41, 59, 0.7);
+            --border: rgba(255, 255, 255, 0.08);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* --- 2. GLOBAL RESET --- */
+        * { 
+            margin: 0; padding: 0; box-sizing: border-box; 
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -webkit-user-select: none; user-select: none;
+        }
+        
+        body { 
+            background-color: var(--bg); 
+            background-image: 
+                radial-gradient(at 0% 100%, rgba(56, 189, 248, 0.05) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(34, 197, 94, 0.03) 0px, transparent 50%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- 3. NAVBAR --- */
+        .navbar {
+            height: 70px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 6%;
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-bottom: 1px solid var(--border);
+            position: sticky; top: 0; z-index: 1000;
+        }
+
+        .logo { 
+            font-size: 1.3rem; font-weight: 800; color: var(--accent); 
+            text-decoration: none; text-transform: uppercase; letter-spacing: -1px;
+        }
+        .logo span { color: var(--text-primary); }
+
+        .menu-toggle { font-size: 24px; cursor: pointer; color: var(--accent); display: none; }
+        .nav-links a { 
+            text-decoration: none; color: var(--text-secondary); 
+            font-weight: 600; font-size: 0.9rem; transition: var(--transition);
+        }
+        .nav-links a:hover { color: var(--accent); }
+
+        /* --- 4. CONTACT CONTAINER --- */
+        .hero {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        .contact-card {
+            background: var(--surface);
+            padding: 60px 40px;
+            border-radius: 32px;
+            border: 1px solid var(--border);
+            max-width: 550px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Subtle top highlight */
+        .contact-card::after {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+        }
+
+        .contact-card h1 { 
+            font-size: 2.2rem; font-weight: 800; 
+            letter-spacing: -1px; margin-bottom: 15px;
+            background: linear-gradient(to right, #fff, var(--text-secondary));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+
+        .contact-card p { 
+            color: var(--text-secondary); line-height: 1.6; 
+            margin-bottom: 40px; font-size: 1.05rem;
+        }
+
+        /* --- 5. INTERACTIVE BUTTONS --- */
+        .wa-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            background-color: var(--whatsapp);
+            color: #000; /* Dark text for high contrast on green */
+            text-decoration: none;
+            padding: 18px 40px;
+            border-radius: 16px;
+            font-size: 1.1rem;
+            font-weight: 800;
+            transition: var(--transition);
+            width: 100%;
+            box-shadow: 0 0 20px rgba(34, 197, 94, 0.2);
+        }
+
+        .wa-btn:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 15px 30px rgba(34, 197, 94, 0.3);
+            filter: brightness(1.1);
+        }
+
+        .email-link {
+            display: inline-block;
+            margin-top: 30px;
+            color: var(--accent);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            opacity: 0.8;
+            transition: var(--transition);
+        }
+
+        .email-link:hover { opacity: 1; letter-spacing: 0.5px; }
+
+        /* --- 6. MOBILE RESPONSIVE --- */
+        @media (max-width: 768px) {
+            .menu-toggle { display: block; }
+            .nav-links {
+                display: none; position: absolute; top: 70px; left: 0; width: 100%;
+                background: var(--glass); backdrop-filter: blur(20px);
+                flex-direction: column; padding: 30px; border-bottom: 1px solid var(--border);
+            }
+            .nav-links.active { display: flex; }
+            
+            .contact-card { padding: 40px 25px; border-radius: 24px; }
+            .contact-card h1 { font-size: 1.7rem; }
+            .wa-btn { font-size: 1rem; padding: 16px 20px; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body oncontextmenu="return false">
+
+    <nav class="navbar">
+        <a href="index.html" class="logo">DE<span>PRÜFUNG</span></a>
+        <div class="menu-toggle" onclick="toggleMenu()">☰</div>
+        <div class="nav-links" id="navLinks">
+            <a href="index.html">Startseite</a>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <div class="contact-card">
+            <h1>Haben Sie Fragen?</h1>
+            <p>Egal ob zur B1 oder B2 Prüfung – wir helfen Ihnen gerne weiter. Kontaktieren Sie uns direkt.</p>
+            
+            <!-- WhatsApp Button -->
+            <a href="https://wa.me/212659159044" target="_blank" class="wa-btn">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766 0-3.18-2.587-5.771-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793 0-.853.434-1.273.588-1.446.144-.174.314-.217.418-.217l.298.001c.094 0 .221-.035.347.268.125.303.433 1.055.471 1.128.039.073.064.157.016.252-.048.094-.073.153-.145.238-.073.084-.153.188-.218.252-.072.072-.148.151-.064.296.084.144.374.616.804 1.001.554.495 1.02.649 1.164.722.144.072.228.059.313-.04.084-.099.361-.418.457-.561.097-.144.193-.12.326-.073s.844.398.988.469c.144.073.241.108.277.169.036.06.036.348-.108.753z"/>
+                </svg>
+                <span>WhatsApp Support</span>
+            </a>
+
+            <a href="mailto:mrmebusiness@gmail.com" class="email-link">mrmebusiness@gmail.com</a>
+        </div>
+    </div>
+
+    <script>
+        // Toggle Mobile Menu
+        function toggleMenu() {
+            document.getElementById('navLinks').classList.toggle('active');
+        }
+
+        // Security
+        document.addEventListener('keydown', e => { 
+            if(e.ctrlKey || e.key === 'F12') e.preventDefault(); 
+        });
+    </script>
+</body>
+</html>

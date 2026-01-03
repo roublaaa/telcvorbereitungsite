@@ -1,54 +1,114 @@
 export async function onRequest(context) {
-  const { request, cookies } = context;
+  try {
+    const { request, cookies } = context;
+    const url = new URL(request.url);
+    const now = Date.now();
 
-  const url = new URL(request.url);
-  const token = url.searchParams.get("token");
+    const token = url.searchParams.get("token");
 
-  const now = Date.now();
+    // 🧠 مدة الصلاحيات
+    const TOKENS = {
+      "MONTH123": 30 * 24 * 60 * 60 * 1000,
+      "3MONTHS456": 90 * 24 * 60 * 60 * 1000,
+      "YEAR789": 365 * 24 * 60 * 60 * 1000
+    };
 
-  // 🔐 مفاتيح يدوية (أنت تغيرها وقت ما تريد)
-  const TOKENS = {
-    "MONTH123": 30 * 24 * 60 * 60 * 1000,   // شهر
-    "3MONTHS456": 90 * 24 * 60 * 60 * 1000, // 3 أشهر
-    "YEAR789": 365 * 24 * 60 * 60 * 1000    // سنة
-  };
+    // 🔎 IP الزائر (Cloudflare)
+    const ip = request.headers.get("cf-connecting-ip") || "unknown";
 
-  let accessUntil = cookies.get("accessUntil");
+    // cookies
+    const accessUntil = cookies.get("accessUntil")?.value;
+    const usedIP = cookies.get("usedIP")?.value;
 
-  // إذا دخل بكود شراء
-  if (token && TOKENS[token]) {
-    const expires = now + TOKENS[token];
+    /* =========================
+       1️⃣ دخول عبر token
+    ========================== */
+    if (token && TOKENS[token]) {
+      const expires = now + TOKENS[token];
 
-    cookies.set("accessUntil", expires.toString(), {
-      path: "/",
-      maxAge: TOKENS[token] / 1000
-    });
+      cookies.set("accessUntil", String(expires), {
+        path: "/",
+        maxAge: TOKENS[token] / 1000
+      });
 
-    return Response.redirect(url.origin, 302);
-  }
+      cookies.set("usedIP", ip, {
+        path: "/",
+        maxAge: TOKENS[token] / 1000
+      });
 
-  // تجربة مجانية أول مرة (5 دقائق)
-  if (!accessUntil) {
-    const trial = 5 * 60 * 1000; // غيرها لاحقًا إلى 24 ساعة
-    const expires = now + trial;
+      return Response.redirect(url.origin, 302);
+    }
 
-    cookies.set("accessUntil", expires.toString(), {
-      path: "/",
-      maxAge: trial / 1000
-    });
+    /* =========================
+       2️⃣ منع الدخول بدون token
+    ========================== */
+    if (!accessUntil) {
+      return blockedPage();
+    }
+
+    /* =========================
+       3️⃣ منع تغيير IP للتحايل
+    ========================== */
+    if (usedIP && usedIP !== ip) {
+      return blockedPage("تم اكتشاف تغيير الجهاز أو الشبكة");
+    }
+
+    /* =========================
+       4️⃣ انتهاء الصلاحية
+    ========================== */
+    if (now > Number(accessUntil)) {
+      return blockedPage("انتهت مدة الاشتراك");
+    }
 
     return context.next();
-  }
 
-  // انتهاء الصلاحية
-  if (now > Number(accessUntil)) {
-    return new Response(`
-      <h1>⛔ انتهت صلاحية الدخول</h1>
-      <p>للاستمرار، تواصل معنا عبر واتساب</p>
-    `, {
-      headers: { "Content-Type": "text/html" }
-    });
+  } catch (e) {
+    return new Response("Access error", { status: 403 });
   }
+}
 
-  return context.next();
+/* =========================
+   صفحة المنع
+========================== */
+function blockedPage(message = "الدخول متاح فقط للمشتركين") {
+  return new Response(`
+    <html>
+      <head>
+        <meta charset="UTF-8" />
+        <title>Access denied</title>
+      </head>
+      <body style="
+        font-family:sans-serif;
+        background:#f5f5f5;
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        height:100vh;
+      ">
+        <div style="
+          background:#fff;
+          padding:30px;
+          border-radius:10px;
+          text-align:center;
+          max-width:400px;
+        ">
+          <h2>⛔ ${message}</h2>
+          <p>للحصول على صلاحية الدخول</p>
+          <a href="https://wa.me/21259159044"
+             style="
+              display:inline-block;
+              margin-top:15px;
+              padding:12px 20px;
+              background:#25D366;
+              color:white;
+              text-decoration:none;
+              border-radius:6px;
+              font-weight:bold;
+             ">
+            تواصل معنا عبر واتساب
+          </a>
+        </div>
+      </body>
+    </html>
+  `, { headers: { "Content-Type": "text/html" } });
 }

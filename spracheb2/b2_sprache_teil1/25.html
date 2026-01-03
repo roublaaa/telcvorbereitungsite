@@ -1,0 +1,598 @@
+
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Jutta</title>
+  <style>
+    /* ========================================= */
+    /*        1. MODERN DESIGN TOKENS            */
+    /* ========================================= */
+    :root {
+      /* Palette: Professional Slate & Blue */
+      --primary: #1e293b;       /* Royal Blue */
+      --primary-soft: #eff6ff;  /* Light Blue bg */
+      --primary-dark: #1e40af;
+      
+      --bg-body: #f1f5f9;       /* Light Gray-Blue */
+      --surface: #ffffff;       /* Pure White */
+      
+      --text-main: #0f172a;     /* Dark Slate */
+      --text-body: #334155;     /* Medium Slate */
+      --text-muted: #64748b;    /* Light Slate */
+      
+      --success: #10b945;       /* Emerald */
+      --success-bg: #279b57;
+      --error: #d30808;         /* Red */
+      --error-bg: #cf3d3d;
+
+      /* Spacing & Borders */
+      --radius: 12px;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --border: 1px solid #e2e8f0;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+    /* ========================================= */
+    /*           2. BASE LAYOUT                  */
+    /* ========================================= */
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: var(--bg-body);
+      color: var(--text-main);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      max-width: 1600px;
+      width: 100%;
+      margin: 0 auto;
+      overflow: hidden; /* Lock outer container on desktop */
+      padding: 20px;
+    }
+
+    .columns {
+      display: flex;
+      flex-direction: row;
+      gap: 30px;
+      height: 100%; /* Fill available space */
+      overflow: hidden;
+    }
+
+    /* ========================================= */
+    /*        3. LEFT COLUMN (TEXT)              */
+    /* ========================================= */
+    .letter {
+      flex: 1; /* 50% width */
+      background-color: var(--surface);
+      padding: 40px;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      border: var(--border);
+      border-top: 5px solid var(--primary);
+      
+      /* Typography */
+      font-size: 1.05rem;
+      line-height: 1.8;
+      color: var(--text-body);
+      
+      /* Internal Scrolling for Desktop */
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: #cbd5e1 transparent;
+    }
+
+    .letter p { margin-bottom: 20px; }
+
+    /* The Gaps in text */
+    .blank {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 32px;
+      height: 26px;
+      margin: 0 4px;
+      padding: 0 6px;
+      background-color: var(--primary-soft);
+      color: var(--primary);
+      border: 1px solid var(--primary);
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: default;
+      vertical-align: middle;
+    }
+
+    /* ========================================= */
+    /*       4. RIGHT COLUMN (QUESTIONS)         */
+    /* ========================================= */
+    .choices {
+      flex: 1; /* 50% width */
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      
+      /* Internal Scrolling for Desktop */
+      overflow-y: auto;
+      padding: 5px; /* prevent shadow clip */
+      scrollbar-width: thin;
+      scrollbar-color: #cbd5e1 transparent;
+    }
+
+    .question-block {
+      background: var(--surface);
+      padding: 20px;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      border: var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: transform 0.2s ease;
+    }
+
+    .question-block:hover {
+      transform: translateY(-2px);
+      border-color: #cbd5e1;
+    }
+
+    /* Question Number Header */
+    .question-block div strong {
+      display: inline-block;
+      background: var(--text-main);
+      color: white;
+      width: 28px;
+      height: 28px;
+      text-align: center;
+      line-height: 28px;
+      border-radius: 50%;
+      font-size: 0.9rem;
+      margin-bottom: 5px;
+    }
+
+    /* Options Layout */
+    .row-container { width: 100%; }
+    .options {
+      display: flex;
+      gap: 10px;
+      width: 100%;
+    }
+
+    /* ========================================= */
+    /*           5. INTERACTIVE OPTIONS          */
+    /* ========================================= */
+    .option {
+      flex: 1;
+      text-align: center;
+      padding: 12px 5px;
+      background-color: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--text-main);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      user-select: none;
+    }
+
+    .option:hover {
+      background-color: #f8fafc;
+      border-color: #94a3b8;
+    }
+
+    /* States */
+    .option.selected {
+      background-color: var(--primary);
+      color: white;
+      border-color: var(--primary);
+      box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+    }
+
+    .option.correct {
+      background-color: var(--success-bg) !important;
+      border-color: var(--success) !important;
+      color: #ffffff !important;
+      font-weight: 700;
+    }
+
+    .option.incorrect {
+      background-color: var(--error-bg) !important;
+      border-color: var(--error) !important;
+      color: #ffffff !important;
+      opacity: 0.8;
+    }
+
+    input[type="radio"] { display: none; }
+
+    /* ========================================= */
+    /*              6. BUTTONS                   */
+    /* ========================================= */
+    .button-wrapper {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      padding: 20px 25px;
+      background: var(--bg-body); /* Blend with background */
+      margin-top: auto;
+    }
+
+    button, .button-wrapper a {
+      padding: 14px 28px;
+      font-size: 1rem;
+      font-weight: 700;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 160px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    }
+
+    #checkBtn {
+      background-color: var(--primary);
+      color: white;
+    }
+    #checkBtn:hover {
+      background-color: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(37, 99, 235, 0.25);
+    }
+
+    #resetBtn, #homeBtn {
+      background-color: white;
+      color: var(--text-main);
+      border: 1px solid #cbd5e1;
+    }
+    #resetBtn:hover, #homeBtn:hover {
+      background-color: #e2e8f0;
+    }
+
+    #warningBox {
+      display: none; position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+      background: var(--error); color: white; padding: 12px 24px; border-radius: 8px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.15); font-weight: bold; z-index: 9999;
+    }
+
+    /* ========================================= */
+    /*           7. MOBILE RESPONSIVE            */
+    /* ========================================= */
+    @media (max-width: 991px) {
+      body {
+        height: auto; /* Unlock body height */
+        overflow-y: auto; /* Allow natural scrolling */
+        display: block;
+      }
+
+      .container {
+        padding: 15px;
+        overflow: visible;
+        height: auto;
+      }
+
+      .columns {
+        flex-direction: column; /* Stack vertically */
+        height: auto;
+        overflow: visible;
+        gap: 20px;
+      }
+
+      /* Text Section on Mobile */
+      .letter {
+        width: 100%;
+        height: auto; /* Auto height to show full text */
+        max-height: none; /* No scrollbar limitation */
+        overflow: visible;
+        padding: 25px;
+        font-size: 1.1rem; /* Slightly larger for reading */
+      }
+
+      /* Questions Section on Mobile */
+      .choices {
+        width: 100%;
+        height: auto;
+        overflow: visible;
+      }
+
+      .question-block {
+        padding: 15px;
+      }
+
+      .options { gap: 8px; }
+      .option { padding: 12px 5px; font-size: 0.95rem; }
+
+      /* Buttons */
+      .button-wrapper {
+        flex-direction: column;
+        padding-bottom: 40px;
+        position: relative;
+        margin-top: 20px;
+      }
+      button, .button-wrapper a { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="columns">
+  <div class="letter">
+    <p>Liebe Jutta,</p>
+    <p>schon so lange habe ich dir nicht geschrieben, ich hatte aber <span class="blank" id="blank1">1</span> einen triftigen Grund. Ich habe das Schreiben <span class="blank" id="blank2">2</span> meiner Krankheit vernachlässigt. Ich hatte fürchterliche Rücken - und Kreuz schmerzen, ich habe aber die richtige Untersuchung immer wieder <span class="blank" id="blank3">3</span>.</p>
+    <p>Ich habe immer nur einige Medikamente eingenommen, die für kurze Zeit zwar geholfen haben, aber die Schmerzen kamen immer zurück. Schließlich konnte ich <span class="blank" id="blank4">4</span> richtig schlafen und mich so natürlich auch bei der Arbeit nicht konzentrieren. Mein Arzt hat mich ins Krankenhaus zu einigen Untersuchungen <span class="blank" id="blank5">5</span>. Die sind anstrengend gewesen und haben ziemlich lange gedauert. Die Lage ist aber nicht so schlimm. Da ich zu viel bei der Arbeit sitze und dazu noch ein paar Kilo <span class="blank" id="blank6">6</span> habe, ist meine Wirbelsäule belastet. Zum Glück muss ich aber nicht operiert werden. Ich gehe jetzt einige Monate lang <span class="blank" id="blank7">7</span> Behandlung. Einige Behandlungen sind schon <span class="blank" id="blank8">8</span> mir und sie scheinen wirksam zu sein.</p>
+    <p>Ich hoffe, dass sich mein Zustand auch weiterhin verbessern wird. Dann werde ich bald wieder gesund. Früher war ich bei einem Naturheilpraktiker, der <span class="blank" id="blank9">9</span> auch geraten hat, mich mehr zu bewegen. Ich glaube, es ist höchste Zeit, damit anzufangen. So könnte ich wenigstens auch etwas abnehmen, was mir <span class="blank" id="blank10">10</span> schaden würde.</p>
+    <p>Soweit für heute, schreib mir bald.</p>
+    <p>Herzliche Grüße</p>
+    <p>deine Anna</p>
+  </div>
+
+  <div class="choices">
+  
+    <div class="question-block" data-blank="1">
+      <div><strong>1.</strong></div>
+      <div class="row-container">
+        <div class="options">
+          <label class="option"><input type="radio" name="q1" value="darauf">darauf</label>
+          <label class="option"><input type="radio" name="q1" value="dafür">dafür</label>
+          <label class="option"><input type="radio" name="q1" value="dazu">dazu</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="question-block" data-blank="2">
+      <div><strong>2.</strong></div>
+      <div class="row-container">
+        <div class="options">
+          <label class="option"><input type="radio" name="q2" value="statt">statt</label>
+          <label class="option"><input type="radio" name="q2" value="wegen">wegen</label>
+          <label class="option"><input type="radio" name="q2" value="während">während</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="question-block" data-blank="3">
+        <div><strong>3.</strong></div>
+        <div class="row-container">
+          <div class="options">
+            <label class="option"><input type="radio" name="q3" value="verschieben">verschieben</label>
+            <label class="option"><input type="radio" name="q3" value="verschiebten">verschiebten</label>
+            <label class="option"><input type="radio" name="q3" value="verschoben">verschoben</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="question-block" data-blank="4">
+        <div><strong>4.</strong></div>
+        <div class="row-container">
+          <div class="options">
+            <label class="option"><input type="radio" name="q4" value="nicht mehr">nicht mehr</label>
+            <label class="option"><input type="radio" name="q4" value="sogar nicht">sogar nicht</label>
+            <label class="option"><input type="radio" name="q4" value="noch nicht">noch nicht</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="question-block" data-blank="5">
+        <div><strong>5.</strong></div>
+        <div class="row-container">
+          <div class="options">
+            <label class="option"><input type="radio" name="q5" value="geschicken">geschicken</label>
+            <label class="option"><input type="radio" name="q5" value="eingewiesen">eingewiesen</label>
+            <label class="option"><input type="radio" name="q5" value="nachgewiesen">nachgewiesen</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="question-block" data-blank="6">
+        <div><strong>6.</strong></div>
+        <div class="row-container">
+          <div class="options">
+            <label class="option"><input type="radio" name="q6" value="Übergewicht">Übergewicht</label>
+            <label class="option"><input type="radio" name="q6" value="Gleichgewicht">Gleichgewicht</label>
+            <label class="option"><input type="radio" name="q6" value="Gleichgültigkeit">Gleichgültigkeit</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="question-block" data-blank="7">
+        <div><strong>7.</strong></div>
+        <div class="row-container">
+          <div class="options">
+            <label class="option"><input type="radio" name="q7" value="zur">zur</label>
+            <label class="option"><input type="radio" name="q7" value="auf">auf</label>
+            <label class="option"><input type="radio" name="q7" value="für">für</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="question-block" data-blank="8">
+        <div><strong>8.</strong></div>
+        <div class="row-container">
+          <div class="options">
+            <label class="option"><input type="radio" name="q8" value="über">über</label>
+            <label class="option"><input type="radio" name="q8" value="vor">vor</label>
+            <label class="option"><input type="radio" name="q8" value="hinter">hinter</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="question-block" data-blank="9">
+        <div><strong>9.</strong></div>
+        <div class="row-container">
+          <div class="options">
+            <label class="option"><input type="radio" name="q9" value="vor allem">vor allem</label>
+            <label class="option"><input type="radio" name="q9" value="unter anderem">unter anderem</label>
+            <label class="option"><input type="radio" name="q9" value="auf alle Fälle">auf alle Fälle</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="question-block" data-blank="10">
+        <div><strong>10.</strong></div>
+        <div class="row-container">
+          <div class="options">
+            <label class="option"><input type="radio" name="q10" value="eigentlich">eigentlich</label>
+            <label class="option"><input type="radio" name="q10" value="überhaupt">überhaupt</label>
+            <label class="option"><input type="radio" name="q10" value="gar nicht">gar nicht</label>
+          </div>
+        </div>
+      </div>
+  </div>
+</div>
+</div>
+
+  <div class="button-wrapper">
+  <button id="checkBtn">Antworten prüfen</button>
+  <button id="resetBtn">Zurücksetzen</button>
+  <a href="/b2_exam.html" id="homeBtn">Zurück zur Startseite</a>
+</div>
+
+<script>
+  const correctAnswers = {
+    1: "dafür",
+    2: "wegen",
+    3: "verschoben",
+    4: "nicht mehr",
+    5: "eingewiesen",
+    6: "Übergewicht",
+    7: "zur",
+    8: "hinter",
+    9: "unter anderem",
+    10: "gar nicht"
+  };
+
+  document.querySelectorAll('.option input[type="radio"]').forEach(input => {
+    input.addEventListener('change', (e) => {
+      const label = e.target.closest('label');
+      const block = e.target.closest('.question-block');
+      const blankId = block.getAttribute('data-blank');
+      const blank = document.getElementById('blank' + blankId);
+
+      block.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
+      label.classList.add('selected');
+      blank.textContent = e.target.value;
+    });
+  });
+
+  document.getElementById("checkBtn").addEventListener("click", () => {
+    document.querySelectorAll('.question-block').forEach(block => {
+      const blankId = block.getAttribute('data-blank');
+      const selectedInput = block.querySelector('input[type="radio"]:checked');
+      const options = block.querySelectorAll('.option');
+
+      options.forEach(opt => opt.classList.remove('correct', 'incorrect'));
+
+      if (selectedInput) {
+        const value = selectedInput.value;
+        const label = selectedInput.closest('.option');
+
+        if (value === correctAnswers[blankId]) {
+          label.classList.add('correct');
+        } else {
+          label.classList.add('incorrect');
+
+          // Show correct answer
+          options.forEach(opt => {
+            if (opt.textContent.trim() === correctAnswers[blankId]) {
+              opt.classList.add('correct');
+            }
+          });
+        }
+      }
+    });
+  });
+  document.getElementById("resetBtn").addEventListener("click", () => {
+  // Reset selected radio buttons
+  document.querySelectorAll('input[type="radio"]').forEach(input => {
+    input.checked = false;
+  });
+
+  // Reset blank text to their number
+  for (let i = 1; i <= 10; i++) {
+    const blank = document.getElementById('blank' + i);
+    if (blank) blank.textContent = i;
+  }
+
+  // Remove selection and feedback classes
+  document.querySelectorAll('.option').forEach(option => {
+    option.classList.remove('selected', 'correct', 'incorrect');
+  });
+});
+</script>
+<script>
+let pingTimeout;
+let logoutTimer;
+let warningTimer;
+let countdownTimer;
+let lastPing = 0;
+
+const INACTIVITY_LIMIT = 15 * 60 * 1000; // 15 minutes
+const WARNING_BEFORE_LOGOUT = 30 * 1000; // 30 seconds
+const warningBox = document.getElementById("warningBox");
+const countdownEl = document.getElementById("countdown");
+
+function sendPing() {
+    const now = Date.now();
+    if (now - lastPing < 10000) return; 
+    lastPing = now;
+    fetch("/ping").catch(() => {});
+}
+
+function resetTimers() {
+    clearTimeout(pingTimeout);
+    clearTimeout(logoutTimer);
+    clearTimeout(warningTimer);
+    clearInterval(countdownTimer);
+
+    warningBox.style.display = "none"; // 🟡 hide warning if active again
+
+    sendPing();
+    pingTimeout = setTimeout(sendPing, 60 * 1000);
+
+    // Show warning 30s before logout
+    warningTimer = setTimeout(() => {
+        let remaining = 30;
+        warningBox.style.display = "block";
+        countdownEl.textContent = remaining;
+
+        countdownTimer = setInterval(() => {
+            remaining--;
+            countdownEl.textContent = remaining;
+            if (remaining <= 0) {
+                clearInterval(countdownTimer);
+            }
+        }, 1000);
+    }, INACTIVITY_LIMIT - WARNING_BEFORE_LOGOUT);
+
+    // Auto logout
+    logoutTimer = setTimeout(() => {
+        fetch("/logout", { method: "POST" })
+          .then(() => window.location.href = "/");
+    }, INACTIVITY_LIMIT);
+}
+
+// Events
+["mousemove", "keydown", "scroll", "click", "touchstart"].forEach(evt => {
+    document.addEventListener(evt, resetTimers);
+});
+
+window.addEventListener("pageshow", sendPing);
+window.addEventListener("beforeunload", sendPing);
+
+resetTimers();
+</script>
+
+</body>
+</html>

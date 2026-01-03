@@ -1,16 +1,30 @@
 export async function onRequest(context) {
-  const url = new URL(context.request.url);
+  const request = context.request;
+  const url = new URL(request.url);
   const token = url.searchParams.get("token");
 
-  // token المسموح
   const VALID_TOKEN = "MONTH123";
 
-  // السماح فقط إذا كان token موجود
+  const cookieHeader = request.headers.get("Cookie") || "";
+  const hasAccess = cookieHeader.includes("access=true");
+
+  // ✅ دخل بالـ token
   if (token === VALID_TOKEN) {
+    return new Response(null, {
+      status: 302,
+      headers: {
+        "Location": url.origin,
+        "Set-Cookie": "access=true; Path=/; Max-Age=2592000" // 30 يوم
+      }
+    });
+  }
+
+  // ✅ لديه cookie → يدخل كل الأقسام
+  if (hasAccess) {
     return context.next();
   }
 
-  // منع أي شخص بدون token
+  // ❌ ممنوع
   return new Response(
     `<!DOCTYPE html>
 <html lang="ar">
@@ -24,10 +38,6 @@ export async function onRequest(context) {
 <a href="https://wa.me/212659159044">تواصل معنا عبر واتساب</a>
 </body>
 </html>`,
-    {
-      headers: {
-        "Content-Type": "text/html; charset=UTF-8"
-      }
-    }
+    { headers: { "Content-Type": "text/html; charset=UTF-8" } }
   );
 }

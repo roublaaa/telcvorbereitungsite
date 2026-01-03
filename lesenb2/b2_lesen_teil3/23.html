@@ -1,0 +1,799 @@
+
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Lesen Teil 3</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Font Awesome for Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* ========================================= */
+    /*        1. PROFESSIONAL VARIABLES          */
+    /* ========================================= */
+    :root {
+      /* Palette */
+      --primary: #1e293b;       
+      --primary-soft: #e0e7ff;
+      --bg-body: #f8fafc;       
+      --surface: #ffffff;
+      
+      --text-main: #0f172a;     
+      --text-muted: #64748b;    
+      
+      --success: #10b981;
+      --success-bg: #ecfdf5;
+      --error: #ef4444;
+      --error-bg: #fef2f2;
+
+      /* Dimensions */
+      --radius: 12px;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      
+      --header-height: 60px;
+      /* INCREASED HEIGHT FOR MOBILE SLIDER */
+      --mobile-answer-height: 170px; 
+    }
+
+    *, *::before, *::after { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: var(--bg-body);
+      color: var(--text-main);
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+
+    /* ========================================= */
+    /*           2. HEADER (FIXED)               */
+    /* ========================================= */
+    .header {
+      position: fixed;
+      top: 0; left: 0; width: 100%;
+      height: var(--header-height);
+      background: var(--primary);
+      border-bottom: 1px solid rgba(0,0,0,0.08);
+      color: var(--surface);
+      z-index: 2000;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 1.2rem;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+      margin: 0;
+    }
+
+    /* ========================================= */
+    /*           3. LAYOUT CONTAINER             */
+    /* ========================================= */
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding-top: calc(var(--header-height) + 30px);
+      padding-bottom: 60px;
+      padding-left: 20px; padding-right: 20px;
+      display: flex;
+      gap: 30px;
+      align-items: flex-start;
+    }
+
+    /* ========================================= */
+    /*        4. LEFT COLUMN (QUESTIONS)         */
+    /* ========================================= */
+    .left-column {
+      width: 65%;
+      flex-shrink: 0;
+    }
+
+    .quiz-scroll-container {
+      background: transparent;
+      padding: 0;
+      box-shadow: none;
+      max-height: none;
+      overflow: visible;
+    }
+
+    .question-box {
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 25px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow);
+      border: 1px solid #e2e8f0;
+      border-left: 5px solid var(--primary);
+    }
+
+    .question-text {
+      font-size: 1rem;
+      color: #334155;
+      margin-top: 15px;
+    }
+    
+    .question-text h4 { margin-top: 0; color: var(--primary); margin-bottom: 8px; }
+
+    /* DROP ZONES */
+    .drop-target {
+      background-color: #f1f5f9;
+      border: 2px dashed #cbd5e1;
+      border-radius: 10px;
+      min-height: 60px;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.2s;
+      cursor: pointer;
+      position: relative;
+      margin-bottom: 15px;
+    }
+
+    .drop-target.empty-drop-target::before {
+      content: "Hier Antwort ablegen";
+      color: #94a3b8; font-size: 0.9rem; font-weight: 500;
+      pointer-events: none;
+    }
+
+    .drop-target.drag-over {
+      background-color: var(--primary-soft);
+      border-color: var(--primary);
+      transform: scale(1.01);
+    }
+
+    /* DROPPED ITEMS */
+    .drop-target .draggable {
+      background: transparent; border: none; box-shadow: none;
+      width: 100%; margin: 0; padding: 5px;
+      text-align: center; color: var(--primary); font-weight: 700;
+      flex-direction: column;
+    }
+
+    /* ========================================= */
+    /*        5. RIGHT COLUMN (ANSWERS)          */
+    /* ========================================= */
+    .right-column {
+      width: 30%;
+      position: sticky; 
+      top: calc(var(--header-height) + 20px); 
+      height: calc(100vh - 100px);
+      z-index: 1000;
+    }
+
+    .right-column-content {
+      background: var(--surface);
+      padding: 15px;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      border: 1px solid #e2e8f0;
+      max-height: 100%;
+      overflow-y: auto;
+    }
+
+    /* DRAGGABLE CARDS */
+    .draggable {
+      background: white;
+      border: 1px solid #e2e8f0;
+      padding: 12px 15px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+      cursor: grab;
+      font-size: 0.9rem; font-weight: 500; color: #334155;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+      display: flex; align-items: flex-start; gap: 10px;
+      user-select: none;
+    }
+
+    .draggable.selected {
+      background-color: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    /* CHECKBOX Styling */
+    .wrong-flag {
+      width: 18px; height: 18px;
+      margin-top: 3px;
+      flex-shrink: 0;
+      cursor: pointer;
+      accent-color: var(--error);
+    }
+
+    /* ========================================= */
+    /*        6. FEEDBACK & BUTTONS              */
+    /* ========================================= */
+    .drop-target.correct { background: var(--success-bg) !important; border-color: var(--success) !important; }
+    .drop-target.correct .draggable { color: #065f46 !important; }
+    .drop-target.incorrect { background: var(--error-bg) !important; border-color: var(--error) !important; }
+    .drop-target.incorrect .draggable { color: #991b1b !important; }
+
+    /* Buttons */
+    .button-container { display: flex; justify-content: center; gap: 15px; margin-top: 40px; margin-bottom: 40px;}
+    
+    .quiz-button {
+      background: var(--text-main); color: white;
+      padding: 14px 28px; border-radius: 50px;
+      font-weight: 600; border: none; cursor: pointer;
+      display: flex; align-items: center; gap: 8px; font-size: 1rem;
+      transition: all 0.2s;
+      box-shadow: var(--shadow);
+      text-decoration: none;
+    }
+    
+    .quiz-button.secondary {
+      background: white; color: var(--text-main); border: 1px solid #cbd5e1;
+    }
+
+    #result { text-align: center; margin-top: 20px; font-weight: bold; padding: 20px; background: white; border-radius: var(--radius); box-shadow: var(--shadow); }
+
+    /* ========================================= */
+    /*           7. MOBILE RESPONSIVE            */
+    /* ========================================= */
+    @media (max-width: 991px) {
+      
+      .header { font-size: 1rem; padding: 0 10px; }
+
+      .container {
+        flex-direction: column;
+        padding: 0;
+        /* Padding Top = Header + Bigger AnswerBar + Gap */
+        padding-top: calc(var(--header-height) + var(--mobile-answer-height) + 25px);
+      }
+
+      /* 1. ANSWER BAR (FIXED TOP HORIZONTAL SLIDER) */
+      .right-column {
+        position: fixed;
+        top: var(--header-height);
+        left: 0; width: 100%;
+        height: var(--mobile-answer-height);
+        z-index: 1500;
+        
+        background: #f8fafc; /* Match body bg */
+        border-bottom: 1px solid rgba(0,0,0,0.1);
+        box-shadow: 0 4px 10px -2px rgba(0,0,0,0.05);
+      }
+
+      .right-column-content {
+        display: flex; 
+        flex-direction: row; 
+        gap: 12px;
+        /* Increased padding inside the slider to prevent clipping */
+        padding: 15px 15px;
+        
+        height: 100%; width: 100%;
+        background: transparent;
+        border: none; box-shadow: none; border-radius: 0;
+        
+        overflow-x: auto; 
+        overflow-y: hidden;
+        white-space: normal;
+        scroll-snap-type: x mandatory;
+        align-items: center; /* Center vertically */
+      }
+      .right-column-content::-webkit-scrollbar { display: none; }
+
+      /* Mobile Draggable Cards */
+      .draggable {
+        flex: 0 0 auto;
+        width: 250px; /* Slightly wider */
+        height: calc(100% - 10px); /* Leave room for shadow */
+        margin: 0;
+        
+        display: flex; 
+        align-items: flex-start; /* Align text top */
+        justify-content: center; 
+        text-align: left;
+        
+        font-size: 0.8rem;
+        padding: 10px;
+        scroll-snap-align: center;
+        border: 1px solid #e2e8f0;
+        background: white;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      }
+      
+      .draggable input.wrong-flag {
+          margin-top: 2px; /* Fix checkbox alignment */
+      }
+
+      /* 2. Questions */
+      .left-column { width: 100%; padding: 0 15px; }
+      .question-box { padding: 20px; }
+
+      /* 3. Buttons */
+      .button-container { flex-direction: column; padding: 0 15px; gap: 10px; }
+      .quiz-button { width: 100%; justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">Lesen Teil 3: Schwägerin Gesund </div>
+
+<div class="container">
+  <div class="left-column">
+    <div class="quiz-scroll-container">
+      <!-- Questions A-->
+      <div class="question-box" data-correct="Eine Freundin bekommt ein Baby. Sie hat oft Schmerzen. Welche Möglichkeit gibt es, ihr zu helfen?">
+        <div class="drop-target empty-drop-target" ondragover="allowDrop(event)" ondrop="drop(event)" onclick="clickDrop(this)"></div>
+        <div class="question-text">
+            <p>Wenn eine schwangere Frau erkrankt oder unter starken Schmerzen leidet, kann sie in den meisten Fällen keine Medikamente einnehmen. Zu groß wäre die Gefahr für das noch ungeborene Kind, denn Schmerzmittel oder Antibiotika können das Baby schädigen. Als Ausweg empfehlen deutsche Ärzte und Krankenkassen daher alternative Heilmethoden wie die Akupunktur. Bei dieser uralten aus China stammenden Heilmethode werden kleine Nadeln in bestimmte Nervenbahnen gestochen. Dabei werden die Nerven gereizt und die Übermittlung von Schmerzsignalen wird gehemmt. Für das Kind besteht keine Gefahr.</p>
+        </div>
+      </div>
+    <!-- Questions B-->
+      <div class="question-box" data-correct="__NO_CORRECT_ANSWER__">
+        <div class="drop-target empty-drop-target" ondragover="allowDrop(event)" ondrop="drop(event)" onclick="clickDrop(this)"></div>
+        <div class="question-text">
+            Eine alte und höchst effektive Methode zur Entspannung ist die Klangmassage. Sie stammt aus Tibet, kann leicht erlernt und jederzeit angewendet werden. Dabei werden tibetanische Klangschalen auf den Körper gesetzt und mit einem weichen Klöppel aus Filz angeschlagen. Die auf diese Weise entstehende Vibration in der Klangschale überträgt sich auf den Körper und vermittelt das Gefühl einer wohltuenden Massage.
+        </div>
+      </div>
+      <!-- Questions C-->
+      <div class="question-box" data-correct="Sie möchten durch pflanzliche Ernährung Ihren Körper vor schweren Krankheiten schützen.">
+        <div class="drop-target empty-drop-target" ondragover="allowDrop(event)" ondrop="drop(event)" onclick="clickDrop(this)"></div>
+        <div class="question-text">
+            <p>Die regelmäßige Ernährung mit Tomaten senkt das Risiko von Krebserkrankungen um fast 50%. Zu diesem Ergebnis kommen Studien der Harvard University. Für die Schutzwirkung verantwortlich ist die rote Farbe der Tomaten, die durch den Stoff Lycopin erzeugt wird. Dabei muss man jedoch beachten, dass die gesundheitsfördernde Wirkung nur eintritt, wenn die Tomaten gekocht und mit ein wenig Fett, z. B. Olivenöl, serviert werden. Aus rohen Tomaten kann der Körper das Lycopin nicht verwerten. Spaghetti Bolognese ist demnach gesünder als Tomatensalat. Tomaten sind in der Mittelmeerküche ein beliebter und unverzichtbarer Bestandteil.</p>
+        </div>
+      </div>
+      <!-- Questions D-->
+      <div class="question-box" data-correct="Ein Bekannter fliegt im Urlaub ans Meer. Sie möchten ihn über mögliche Risiken der Sonnenstrahlung informieren.">
+        <div class="drop-target empty-drop-target" ondragover="allowDrop(event)" ondrop="drop(event)" onclick="clickDrop(this)"></div>
+        <div class="question-text">
+            <p>Dass zu langes In-der-Sonne-Liegen nicht gut ist, wissen im Prinzip alle. Trotzdem lassen sich Jahr für Jahr unzählige Touristen an den Stränden des Mittelmeeres in der Sonne rösten, bis sie einen Sonnenbrand oder schlimmstenfalls sogar schwere Verbrennungen bekommen haben. Doch auch der als harmlos geltende leichte Sonnenbrand ist nicht so ungefährlich, wie viele meinen. Deshalb rät die Dermatologische Gesellschaft in Jena allen Sonnenanbetern, sich regelmäßig auf erste Anzeichen von Hautkrebs untersuchen zu lassen. Nur wenn der Krebs im Anfangsstadium entdeckt wird, bestünden gute Heilungsaussichten, so ein Sprecher der Gesellschaft.</p>
+        </div>
+      </div>
+      <!-- Questions E-->
+      <div class="question-box" data-correct="Eine Bekannte, die ein Kind erwartet, sucht Ernährungstipps.">
+        <div class="drop-target empty-drop-target" ondragover="allowDrop(event)" ondrop="drop(event)" onclick="clickDrop(this)"></div>
+        <div class="question-text">
+            <p>In der Schwangerschaft haben Frauen einen stark erhöhten Bedarf an Vitaminen und Mineralstoffen. Schwangere Frauen sollten daher ihre Nahrung sorgfältig aussuchen und naturbelassene Produkte bevorzugen. Obst, Gemüse und Getreide sollten zu den Grundbausteinen der Ernährung gehören. Milchprodukte, besonders Butter und Sahne, liefern das für den Knochenaufbau des Babys wichtige Calcium. Auch Fleisch sollte auf dem Speiseplan nicht fehlen, da es das für den Blutaufbau wichtige Eisen enthält. Es sollte aber nicht zu fett sein. Auf keinen Fall sollte eine Frau während der Schwangerschaft eine Abmagerungsdiät machen, der Verlust an Vitaminen und Nährstoffen könnte sich auf die Entwicklung negativ auswirken.</p>
+        </div>
+      </div>
+      <!-- Questions F-->
+      <div class="question-box" data-correct="__NO_CORRECT_ANSWER__">
+        <div class="drop-target empty-drop-target" ondragover="allowDrop(event)" ondrop="drop(event)" onclick="clickDrop(this)"></div>
+        <div class="question-text">
+            <h4>Ist Butter gesünder oder Margarine?</h4>
+            Ernährungsberater betonen, dass es hinsichtlich Zusammensetzung und Geschmack keine Hinweise darauf gibt, welches der beiden Nahrungsmittel das bessere oder gesündere ist. Da sowohl Butter als auch Margarine viel Fett enthält, sollten sie sparsam benutzt werden. Insbesondere Personen, die an Fettstottwechselerkrankungen leiden, sollten von beiden Nahrungsmitteln so wenig wie möglich verwenden.          
+        </div>
+      </div>
+      <!-- Questions G-->
+      <div class="question-box" data-correct="Ihre Freundin denkt darüber nach, alle hochhackigen Schuhe wegzuwerfen, weil sie negative Auswirkungen auf ihre Gelenke befürchtet.">
+        <div class="drop-target empty-drop-target" ondragover="allowDrop(event)" ondrop="drop(event)" onclick="clickDrop(this)"></div>
+        <div class="question-text">
+            Damenschuhe mit hohen Absätzen schaden der Gesundheit, insbesondere der Rücken, die Knie und die Wirbelsäule würden geschädigt. So lauteten viele Jahre lang das Urteil vieler Orthopäden. Dass es sich hierbei nur um ein Vorurteil handelt, berichtet jetzt die britische Fachzeitschrift "Ärztliche Praxis“. In einer Langzeitstudie bewiesen die britischen Forscher, dass die Häufigkeit von Knie- oder Rückenerkrankungen bei Probandinnen, die über mehrere Jahre keine bzw. ausschließlich Schuhe mit hohen Absätzen getragen hatten, nicht verschieden war. Die Höhe der Schuhabsätze hat daher keinen Einfluss auf die Gesundheit.
+        </div>
+      </div>
+      <!-- Questions H-->
+      <div class="question-box" data-correct="__NO_CORRECT_ANSWER__">
+        <div class="drop-target empty-drop-target" ondragover="allowDrop(event)" ondrop="drop(event)" onclick="clickDrop(this)"></div>
+        <div class="question-text">
+          In der Sonne liegen und eine braune Haut bekommen, das ist nach wie vor ein wichtiges Ziel vieler Urlauber, die ihre Ferien an den Mittelmeerstränden verbringen. An zweiter Stelle stehen sportliche Aktivitäten und Fitnesstraining. Dafür werden sogar Unannehmlichkeiten wie überfüllte Strände, überteuerte Sportangebote und mittelmäßiges Essen in Kauf genommen. Die kulturelle Bildung, der Besuch von Museen und kulturellen Denkmälern in den Urlaubsländern, steht lediglich bei älteren Reisenden hoch im Kurs.
+        </div>
+      </div>
+      <!-- Questions I-->
+      <div class="question-box" data-correct="Ein Bekannter hat oft Kopfschmerzen. Er möchte jedoch keine Tabletten nehmen.">
+        <div class="drop-target empty-drop-target" ondragover="allowDrop(event)" ondrop="drop(event)" onclick="clickDrop(this)"></div>
+        <div class="question-text">
+            Die Fußreflexzonenmassage entwickelte im Jahr 1913 der amerikanische, Arzt William Fitzgerald. Sie beruht auf der Vorstellung, dass bestimmten Regionen an der Fußsohle, an der Fußinnenseite und an den Zehen bestimmte Organe des Körpers zugeordnet sind. Durch die Massage der entsprechenden Reflexzonen am Fuß werden Nervenreize ausgelöst, die Spannungen und Blockaden auflösen, und die Selbstheilungskraft des Körpers wird aktiviert. Besonders bei Problemen mit der Verdauung, bei Kopf- und Rückenschmerzen hat sich die Fußreflexzonenmassage bewährt.
+          </div>
+      </div>
+      <!-- Questions J-->
+      <div class="question-box" data-correct="__NO_CORRECT_ANSWER__">
+        <div class="drop-target empty-drop-target" ondragover="allowDrop(event)" ondrop="drop(event)" onclick="clickDrop(this)"></div>
+        <div class="question-text">
+            Ältere Reisende bevorzugen am Urlaubsziel Ruhe und mäßige Aktivität. Viele reisen deswegen in die Mittelgebirge und verbringen ihren Urlaub mit Wandern und ausgedehnten Spaziergängen in der Natur. Sie legen jedoch auch großen Wert auf eine angenehme und komfortable Unterkunft und auf gutes Essen. Beliebte Reiseziele sind in Deutschland der Schwarzwald, der Bayerische Wald, die Rhön sowie Hunsrück und Eifel. Ins Ausland zieht es die Senioren oft nach Österreich, in die Schweiz oder nach Norditalien.
+        </div>
+      </div>
+        <!-- Questions K-->
+      <div class="question-box" data-correct="Eine Freundin hat viel Stress und möchte einen Ausgleich finden, der auch mit sportlichen Aktivitäten verbunden ist.">
+        <div class="drop-target empty-drop-target" ondragover="allowDrop(event)" ondrop="drop(event)" onclick="clickDrop(this)"></div>
+        <div class="question-text">
+            <h4>Tai-Chi-Chuan ist ein alter chinesischer Begriff.</h4>
+            Er bedeutet "über allem stehen". Beim chinesischen Schattenboxen stehen langsame, weiche und fließende Bewegungen im Einklang mit den natürlichen Bewegungsabläufen des Körpers. Sie führen, wenn sie regelmäßig geübt werden, zu innerer Ruhe und Harmonie, zur Steigerung der Konzentration und der Ausdauer. Ein chinesischer Spruch lautet: "Wer Tai-Chi nutzt, wird beweglich wie ein Kind, stark wie ein Krieger und ruhig wie ein Weiser".
+        </div>
+      </div>
+      <!-- Questions L-->
+      <div class="question-box" data-correct="Ein Bekannter möchte sich modische Schuhe kaufen. Er weiß aber nicht, ob er sich das leisten kann.">
+        <div class="drop-target empty-drop-target" ondragover="allowDrop(event)" ondrop="drop(event)" onclick="clickDrop(this)"></div>
+        <div class="question-text">
+            <h4>Gute Schuhe müssen nicht unbedingt teuer sein.</h4>
+            Zu diesem Ergebnis kommt ein Test, der von einem deutschen Fernsehendem durchgeführt wurde. Mehrere Schuh- und Modespezialisten sollten unter ähnlich aussehenden Modellen das jeweils am besten verarbeitete, das schönste und das teuerste Modell herausfinden. Dabei waren jeweils ein Designerschuhpaar, zwei Mittelklassemodelle und zwei Paar aus billigen Schuhketten. Im Ergebnis waren die Spezialisten oft nicht in der Lage, die Qualität zu unterscheiden. In einem Fall wurde sogar das billigste Modell für einen Designerschuh gehalten.
+          </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="right-column">
+    <!-- MODIFIED: Added ondragover and ondrop to make this a droppable area -->
+    <div class="right-column-content" onclick="clearSelected()" ondragover="allowDrop(event)" ondrop="dropOnAnswersContainer(event)">
+      <!-- Answers -->
+      <div class="draggable" draggable="true" id="a1" onclick="selectAnswer(this, event)" ondragstart="drag(event)">
+        <input type="checkbox" class="wrong-flag" onclick="event.stopPropagation()"> Eine Bekannte ist schwanger und sucht Informationen, welche Sportarten erlaubt sind.
+      </div>
+      <div class="draggable" draggable="true" id="a2" onclick="selectAnswer(this, event)" ondragstart="drag(event)">
+        <input type="checkbox" class="wrong-flag" onclick="event.stopPropagation()"> Ein Bekannter fliegt im Urlaub ans Meer. Sie möchten ihn über mögliche Risiken der Sonnenstrahlung informieren.
+      </div>
+      <div class="draggable" draggable="true" id="a3" onclick="selectAnswer(this, event)" ondragstart="drag(event)">
+        <input type="checkbox" class="wrong-flag" onclick="event.stopPropagation()"> Ein Bekannter möchte sich modische Schuhe kaufen. Er weiß aber nicht, ob er sich das leisten kann.
+      </div>
+      <div class="draggable" draggable="true" id="a4" onclick="selectAnswer(this, event)" ondragstart="drag(event)">
+        <input type="checkbox" class="wrong-flag" onclick="event.stopPropagation()"> Sie möchten durch pflanzliche Ernährung Ihren Körper vor schweren Krankheiten schützen. 
+      </div>
+      <div class="draggable" draggable="true" id="a5" onclick="selectAnswer(this, event)" ondragstart="drag(event)">
+        <input type="checkbox" class="wrong-flag" onclick="event.stopPropagation()"> Eine Bekannte, die ein Kind erwartet, sucht Ernährungstipps.
+      </div>
+      <div class="draggable" draggable="true" id="a6" onclick="selectAnswer(this, event)" ondragstart="drag(event)">
+        <input type="checkbox" class="wrong-flag" onclick="event.stopPropagation()"> Ein älteres Ehepaar sucht Informationen über einen ruhigen Urlaub am Meer. 
+      </div>
+      <div class="draggable" draggable="true" id="a7" onclick="selectAnswer(this, event)" ondragstart="drag(event)">
+        <input type="checkbox" class="wrong-flag" onclick="event.stopPropagation()"> Ihre Freundin denkt darüber nach, alle hochhackigen Schuhe wegzuwerfen, weil sie negative Auswirkungen auf ihre Gelenke befürchtet. 
+      </div>
+      <div class="draggable" draggable="true" id="a8" onclick="selectAnswer(this, event)" ondragstart="drag(event)">
+        <input type="checkbox" class="wrong-flag" onclick="event.stopPropagation()"> Eine Freundin hat viel Stress und möchte einen Ausgleich finden, der auch mit sportlichen Aktivitäten verbunden ist.
+      </div>
+      <div class="draggable" draggable="true" id="a9" onclick="selectAnswer(this, event)" ondragstart="drag(event)">
+        <input type="checkbox" class="wrong-flag" onclick="event.stopPropagation()"> Eine Freundin bekommt ein Baby. Sie hat oft Schmerzen. Welche Möglichkeit gibt es, ihr zu helfen? 
+      </div>
+      <div class="draggable" draggable="true" id="a10" onclick="selectAnswer(this, event)" ondragstart="drag(event)">
+        <input type="checkbox" class="wrong-flag" onclick="event.stopPropagation()"> Ein Bekannter hat oft Kopfschmerzen. Er möchte jedoch keine Tabletten nehmen.
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="result"></div>
+<div class="button-container">
+    <button id="submitQuizButton" class="quiz-button">
+      <i class="fas fa-paper-plane"></i> Abschicken
+    </button>
+    <button id="resetQuizButton" class="quiz-button secondary">
+      <i class="fas fa-redo"></i> Zurücksetzen
+    </button>
+    <!-- Changed to <a> tag for navigation, href to a generic "index.html" or "#" -->
+    <a href="/b2_exam.html" id="homeButton" class="quiz-button secondary" role="button">
+      <i class="fas fa-home"></i> Startseite
+    </a>
+  </div>
+
+<script>
+  let selectedAnswer = null;
+  const rightColumnContent = document.querySelector(".right-column-content");
+  const originalAnswerOrder = Array.from(rightColumnContent.querySelectorAll('.draggable')); // Store initial order for reset
+
+  // MODIFIED: allowDrop to correctly identify parent droppable container
+  function allowDrop(ev) {
+    ev.preventDefault();
+    let droppableContainer = ev.target;
+    // Traverse up to find the actual droppable container (.drop-target or .right-column-content)
+    while (droppableContainer && droppableContainer !== document.body &&
+           !droppableContainer.classList.contains("drop-target") &&
+           !droppableContainer.classList.contains("right-column-content")) {
+        droppableContainer = droppableContainer.parentElement;
+    }
+
+    if (droppableContainer && (droppableContainer.classList.contains("drop-target") || droppableContainer.classList.contains("right-column-content"))) {
+        droppableContainer.classList.add("drag-over");
+    }
+  }
+
+  function drag(ev) {
+    ev.dataTransfer.setData("text", ev.target.id);
+    ev.target.classList.add("dragging");
+  }
+
+  document.addEventListener('dragleave', function(event) {
+    if (event.target.classList && (event.target.classList.contains("drop-target") || event.target.classList.contains("right-column-content"))) {
+        if (!event.target.contains(event.relatedTarget) && event.target !== event.relatedTarget) {
+             event.target.classList.remove("drag-over");
+        } else if (event.relatedTarget === null) { 
+            event.target.classList.remove("drag-over");
+        }
+    }
+  }, false);
+  
+  document.addEventListener('dragend', function(event) {
+    if (event.target.classList && event.target.classList.contains('draggable')) {
+      event.target.classList.remove('dragging');
+    }
+    document.querySelectorAll('.drop-target.drag-over, .right-column-content.drag-over').forEach(el => {
+        el.classList.remove('drag-over');
+    });
+  });
+
+  // MODIFIED: drop function for question slots
+  function drop(ev) {
+    ev.preventDefault();
+    const draggedId = ev.dataTransfer.getData("text");
+    const draggedEl = document.getElementById(draggedId);
+    let dropTarget = ev.target;
+
+    while (dropTarget && !dropTarget.classList.contains("drop-target")) {
+        dropTarget = dropTarget.parentElement;
+    }
+    
+    if (!dropTarget || !draggedEl) return;
+
+    dropTarget.classList.remove("drag-over");
+
+    const originalParentOfDraggedEl = draggedEl.parentElement; 
+
+    const currentAnswerInTarget = dropTarget.querySelector(".draggable");
+    if (currentAnswerInTarget && currentAnswerInTarget !== draggedEl) {
+      rightColumnContent.appendChild(currentAnswerInTarget);
+      showCheckbox(currentAnswerInTarget);
+    }
+    
+    dropTarget.innerHTML = ""; 
+    dropTarget.appendChild(draggedEl);
+    hideCheckbox(draggedEl);
+    updateDropTargetState(dropTarget);
+
+    if (originalParentOfDraggedEl &&
+        originalParentOfDraggedEl.classList.contains("drop-target") &&
+        originalParentOfDraggedEl !== dropTarget) {
+        updateDropTargetState(originalParentOfDraggedEl);
+    }
+
+    if (selectedAnswer === draggedEl) {
+        draggedEl.classList.remove("selected");
+        selectedAnswer = null;
+    }
+  }
+
+  // NEW: Function to handle drops onto the answers container
+  function dropOnAnswersContainer(ev) {
+    ev.preventDefault();
+    const draggedId = ev.dataTransfer.getData("text");
+    const draggedEl = document.getElementById(draggedId);
+    const answersContainer = ev.currentTarget; 
+
+    if (!draggedEl || !answersContainer) return;
+
+    answersContainer.classList.remove("drag-over");
+
+    const originalParentOfDraggedEl = draggedEl.parentElement; 
+
+    answersContainer.appendChild(draggedEl);
+    showCheckbox(draggedEl);
+
+    if (originalParentOfDraggedEl && originalParentOfDraggedEl.classList.contains("drop-target")) {
+        updateDropTargetState(originalParentOfDraggedEl);
+    }
+
+    if (selectedAnswer === draggedEl) {
+        draggedEl.classList.remove("selected");
+        selectedAnswer = null;
+    }
+  }
+
+
+  function hideCheckbox(el) {
+    const checkbox = el.querySelector(".wrong-flag");
+    if (checkbox) checkbox.style.display = "none";
+  }
+
+  function showCheckbox(el) {
+    const checkbox = el.querySelector(".wrong-flag");
+    if (checkbox) checkbox.style.display = "inline-block";
+  }
+
+  function selectAnswer(el, event) {
+    event.stopPropagation(); 
+    if (selectedAnswer === el) { 
+      el.classList.remove("selected");
+      selectedAnswer = null;
+    } else {
+      if (selectedAnswer) selectedAnswer.classList.remove("selected");
+      selectedAnswer = el;
+      el.classList.add("selected");
+    }
+  }
+
+  // MODIFIED: clickDrop function
+  function clickDrop(targetDropzone) {
+    if (selectedAnswer) {
+      const originalParentOfSelectedAnswer = selectedAnswer.parentElement;
+
+      const currentAnswerInDropzone = targetDropzone.querySelector(".draggable");
+      if (currentAnswerInDropzone && currentAnswerInDropzone !== selectedAnswer) {
+        rightColumnContent.appendChild(currentAnswerInDropzone);
+        showCheckbox(currentAnswerInDropzone);
+      }
+      
+      targetDropzone.innerHTML = ""; 
+      targetDropzone.appendChild(selectedAnswer);
+      hideCheckbox(selectedAnswer);
+      updateDropTargetState(targetDropzone);
+
+      if (originalParentOfSelectedAnswer &&
+          originalParentOfSelectedAnswer.classList.contains("drop-target") &&
+          originalParentOfSelectedAnswer !== targetDropzone) {
+          updateDropTargetState(originalParentOfSelectedAnswer);
+      }
+
+      selectedAnswer.classList.remove("selected");
+      selectedAnswer = null;
+    }
+  }
+
+  function clearSelected() {
+    if (selectedAnswer) {
+      selectedAnswer.classList.remove("selected");
+      selectedAnswer = null;
+    }
+  }
+
+  function updateDropTargetState(dropTarget) {
+    if (!dropTarget || !dropTarget.classList.contains('drop-target')) return;
+    
+    if (dropTarget.querySelector(".draggable")) {
+      dropTarget.classList.remove("empty-drop-target");
+    } else {
+      dropTarget.classList.add("empty-drop-target");
+    }
+  }
+
+  function getDraggableText(draggableElement) {
+    const clone = draggableElement.cloneNode(true);
+    const checkbox = clone.querySelector('.wrong-flag');
+    if (checkbox) {
+        checkbox.remove();
+    }
+    return clone.textContent.trim();
+  }
+
+  function submitQuiz() {
+    let total = 0, correct = 0;
+    document.querySelectorAll('.question-box').forEach((box) => {
+      total++;
+      const correctAnswerText = box.getAttribute("data-correct").trim();
+      const dropTarget = box.querySelector(".drop-target");
+      const droppedDraggable = dropTarget.querySelector(".draggable");
+      
+      dropTarget.classList.remove("correct", "incorrect"); 
+
+      if (droppedDraggable) { 
+        const selectedText = getDraggableText(droppedDraggable); 
+        if (correctAnswerText === "__NO_CORRECT_ANSWER__") {
+          dropTarget.classList.add("incorrect");
+        } else {
+          if (selectedText === correctAnswerText) {
+            dropTarget.classList.add("correct");
+            correct++;
+          } else {
+            dropTarget.classList.add("incorrect");
+          }
+        }
+      } else { 
+        if (correctAnswerText !== "__NO_CORRECT_ANSWER__") {
+          dropTarget.classList.add("incorrect");
+        }
+      }
+      updateDropTargetState(dropTarget); 
+    });
+
+    let wrongMarkedCorrect = 0, wrongMarkedTotal = 0;
+    rightColumnContent.querySelectorAll('.draggable').forEach((answerEl) => {
+      const text = getDraggableText(answerEl); 
+      const checkbox = answerEl.querySelector('.wrong-flag');
+      
+      const isACorrectAnswerOptionForAnyQuestion = Array.from(document.querySelectorAll('.question-box'))
+        .some(box => {
+            const qCorrectText = box.getAttribute('data-correct').trim();
+            return qCorrectText !== "__NO_CORRECT_ANSWER__" && qCorrectText === text;
+        });
+      
+      if (!isACorrectAnswerOptionForAnyQuestion) { 
+        wrongMarkedTotal++; 
+        if (checkbox.checked) {
+          wrongMarkedCorrect++; 
+        }
+      }
+    });
+
+    const questionsWithNoAnswer = Array.from(document.querySelectorAll('.question-box'))
+                                      .filter(box => box.getAttribute('data-correct').trim() === "__NO_CORRECT_ANSWER__").length;
+    const scorableTotal = total - questionsWithNoAnswer;
+
+
+    const resultDiv = document.getElementById("result");
+    resultDiv.innerHTML =
+      `<span class="correct-count">✅ ${correct}</span> von <span class="total-count">${scorableTotal}</span> bewertbaren Fragen richtig. | ` + 
+      `<span class="marked-wrong-count">🚫 Falsch-Antworten korrekt markiert: ${wrongMarkedCorrect}</span> von ${wrongMarkedTotal}.`;
+  }
+
+  function resetQuiz() {
+    document.querySelectorAll('.drop-target').forEach(dt => {
+        const draggable = dt.querySelector('.draggable');
+        if (draggable) {
+            rightColumnContent.appendChild(draggable); 
+            showCheckbox(draggable); 
+        }
+        dt.innerHTML = ''; 
+        dt.classList.remove('correct', 'incorrect'); 
+        updateDropTargetState(dt); 
+    });
+
+    rightColumnContent.innerHTML = ''; 
+    originalAnswerOrder.forEach(draggable => {
+        rightColumnContent.appendChild(draggable); 
+        draggable.classList.remove('selected', 'dragging'); 
+        showCheckbox(draggable); 
+        const checkbox = draggable.querySelector('.wrong-flag');
+        if (checkbox) checkbox.checked = false; 
+    });
+    
+    if (selectedAnswer) {
+      selectedAnswer.classList.remove('selected');
+      selectedAnswer = null;
+    }
+
+    document.getElementById("result").innerHTML = ""; 
+  }
+
+  document.getElementById('submitQuizButton').addEventListener('click', submitQuiz);
+  document.getElementById('resetQuizButton').addEventListener('click', resetQuiz);
+
+  document.querySelectorAll('.drop-target').forEach(updateDropTargetState);
+</script>
+<script>
+let pingTimeout;
+let logoutTimer;
+let warningTimer;
+let countdownTimer;
+let lastPing = 0;
+
+const INACTIVITY_LIMIT = 15 * 60 * 1000; // 15 minutes
+const WARNING_BEFORE_LOGOUT = 30 * 1000; // 30 seconds
+const warningBox = document.getElementById("warningBox");
+const countdownEl = document.getElementById("countdown");
+
+function sendPing() {
+    const now = Date.now();
+    if (now - lastPing < 10000) return; 
+    lastPing = now;
+    fetch("/ping").catch(() => {});
+}
+
+function resetTimers() {
+    clearTimeout(pingTimeout);
+    clearTimeout(logoutTimer);
+    clearTimeout(warningTimer);
+    clearInterval(countdownTimer);
+
+    warningBox.style.display = "none"; // 🟡 hide warning if active again
+
+    sendPing();
+    pingTimeout = setTimeout(sendPing, 60 * 1000);
+
+    // Show warning 30s before logout
+    warningTimer = setTimeout(() => {
+        let remaining = 30;
+        warningBox.style.display = "block";
+        countdownEl.textContent = remaining;
+
+        countdownTimer = setInterval(() => {
+            remaining--;
+            countdownEl.textContent = remaining;
+            if (remaining <= 0) {
+                clearInterval(countdownTimer);
+            }
+        }, 1000);
+    }, INACTIVITY_LIMIT - WARNING_BEFORE_LOGOUT);
+
+    // Auto logout
+    logoutTimer = setTimeout(() => {
+        fetch("/logout", { method: "POST" })
+          .then(() => window.location.href = "/");
+    }, INACTIVITY_LIMIT);
+}
+
+// Events
+["mousemove", "keydown", "scroll", "click", "touchstart"].forEach(evt => {
+    document.addEventListener(evt, resetTimers);
+});
+
+window.addEventListener("pageshow", sendPing);
+window.addEventListener("beforeunload", sendPing);
+
+resetTimers();
+</script>
+
+</body>
+</html>
